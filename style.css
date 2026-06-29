@@ -1,0 +1,185 @@
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height:100vh;}
+
+/* ========================================
+   LOGIN
+======================================== */
+.login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
+    url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1974&auto=format&fit=crop') center/cover;
+}
+.login-box{
+  width:100%;max-width:400px;background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);
+  border-radius:28px;padding:50px 40px;border:1px solid rgba(255,255,255,0.15);
+}
+.app-title{font-size:48px;font-weight:900;letter-spacing:6px;text-align:center;margin-bottom:6px;color:white;}
+.app-sub{text-align:center;color:#f97316;letter-spacing:4px;font-size:12px;margin-bottom:36px;}
+.user-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.user-btn{
+  padding:20px;border:2px solid transparent;border-radius:18px;cursor:pointer;
+  font-size:15px;font-weight:700;letter-spacing:2px;transition:0.25s;text-align:center;background:none;
+}
+.user-btn.kaito{background:rgba(249,115,22,0.15);color:#f97316;border-color:#f97316;}
+.user-btn.kaito:hover{background:#f97316;color:white;}
+.user-btn.nana{background:rgba(168,85,247,0.15);color:#a855f7;border-color:#a855f7;}
+.user-btn.nana:hover{background:#a855f7;color:white;}
+.user-avatar{font-size:34px;margin-bottom:8px;}
+.login-hint{text-align:center;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:1px;}
+.status-badge{border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:12px;line-height:1.6;}
+.status-badge.demo{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);color:#f97316;}
+.status-badge.connected{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;}
+
+/* ========================================
+   LAYOUT
+======================================== */
+.app-layout{display:flex;min-height:100vh;}
+.sidebar{
+  width:220px;background:#181818;border-right:1px solid #2c2c2c;
+  padding:28px 18px;display:flex;flex-direction:column;gap:6px;
+  position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform 0.3s;
+}
+.sidebar-user{padding:14px 16px;border-radius:14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sidebar-user.kaito{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);}
+.sidebar-user.nana{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);}
+.sidebar-user .av{font-size:22px;}
+.sidebar-user .uname{font-size:13px;font-weight:700;letter-spacing:1px;}
+.sidebar-user.kaito .uname{color:#f97316;}
+.sidebar-user.nana .uname{color:#a855f7;}
+.nav-btn{
+  padding:12px 16px;border-radius:12px;border:none;background:transparent;
+  color:#9ca3af;cursor:pointer;font-size:14px;text-align:left;width:100%;transition:0.2s;
+}
+.nav-btn:hover{background:#2c2c2c;color:white;}
+.nav-btn.active-orange{background:rgba(249,115,22,0.2);color:#f97316;}
+.nav-btn.active-purple{background:rgba(168,85,247,0.2);color:#a855f7;}
+.logout-btn{margin-top:auto;padding:12px;border-radius:12px;border:none;background:#dc2626;color:white;cursor:pointer;font-size:13px;width:100%;transition:0.2s;}
+.logout-btn:hover{background:#b91c1c;}
+.main{margin-left:220px;padding:32px;width:calc(100% - 220px);}
+
+/* ========================================
+   HERO
+======================================== */
+.hero{border-radius:24px;padding:40px 44px;margin-bottom:24px;}
+.hero.kaito{background:linear-gradient(135deg,#1a0a00 0%,#3d1500 100%);border:1px solid rgba(249,115,22,0.3);}
+.hero.nana{background:linear-gradient(135deg,#0e001a 0%,#2a0050 100%);border:1px solid rgba(168,85,247,0.3);}
+.hero-tag{font-size:11px;letter-spacing:5px;margin-bottom:8px;}
+.hero.kaito .hero-tag{color:#f97316;}
+.hero.nana .hero-tag{color:#a855f7;}
+.hero h1{font-size:40px;font-weight:900;margin-bottom:6px;}
+.hero-sub{color:#6b7280;font-size:14px;}
+
+/* ========================================
+   STATS
+======================================== */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:#181818;border-radius:18px;padding:22px;border:1px solid #2c2c2c;}
+.stat-label{font-size:11px;letter-spacing:3px;color:#6b7280;margin-bottom:8px;}
+.stat-val{font-size:30px;font-weight:800;}
+.stat-val.orange{color:#f97316;}
+.stat-val.purple{color:#a855f7;}
+
+/* ========================================
+   SECTION
+======================================== */
+.section{background:#181818;border-radius:20px;padding:24px;margin-bottom:20px;border:1px solid #2c2c2c;}
+.section-title{font-size:13px;letter-spacing:3px;margin-bottom:18px;}
+.section-title.orange{color:#f97316;}
+.section-title.purple{color:#a855f7;}
+
+/* ========================================
+   FORM
+======================================== */
+.add-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
+.add-form input{
+  padding:12px;border:1px solid #2c2c2c;border-radius:12px;
+  background:#0f0f0f;color:white;font-size:15px;width:100%;
+}
+.add-form input:focus{outline:none;border-color:#f97316;}
+.add-form input.pf:focus{border-color:#a855f7;}
+.submit-btn{padding:12px;border:none;border-radius:12px;color:white;font-size:15px;cursor:pointer;font-weight:600;transition:0.2s;}
+.submit-btn.orange{background:#f97316;}
+.submit-btn.orange:hover{background:#ea6c10;}
+.submit-btn.purple{background:#a855f7;}
+.submit-btn.purple:hover{background:#9333ea;}
+
+/* ========================================
+   WORKOUT CARDS
+======================================== */
+.workout-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.workout-card{background:#0f0f0f;border:1px solid #2c2c2c;border-radius:16px;padding:18px;transition:0.2s;position:relative;}
+.workout-card:hover{border-color:#f97316;}
+.workout-card.np:hover{border-color:#a855f7;}
+.wc-name{color:#f97316;font-size:14px;margin-bottom:12px;font-weight:700;}
+.wc-name.purple{color:#a855f7;}
+.workout-stats{display:flex;justify-content:space-between;}
+.workout-stats>div span{color:#6b7280;font-size:11px;letter-spacing:1px;display:block;}
+.workout-stats>div strong{font-size:20px;}
+.workout-date{color:#4b5563;font-size:11px;margin-top:10px;}
+.pr-badge{position:absolute;top:12px;right:12px;background:#7c2d12;color:#fb923c;font-size:10px;padding:2px 8px;border-radius:20px;}
+.pr-badge.pp{background:#3b0764;color:#c084fc;}
+.del-btn{margin-top:12px;background:#dc2626;border:none;color:white;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;}
+.del-btn:hover{background:#b91c1c;}
+
+/* ========================================
+   PR TABLE
+======================================== */
+.pr-table{width:100%;border-collapse:collapse;}
+.pr-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 12px;border-bottom:1px solid #2c2c2c;}
+.pr-table td{padding:12px;border-bottom:1px solid #1a1a1a;font-size:14px;}
+.pr-table td.prw{font-size:22px;font-weight:800;color:#f97316;}
+.pr-table td.prw.purple{color:#a855f7;}
+.pr-table tr:hover td{background:#111;}
+
+/* ========================================
+   WEEKLY MENU
+======================================== */
+.day-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.day-tab{padding:6px 14px;border-radius:10px;border:1px solid #2c2c2c;background:#0f0f0f;color:#9ca3af;cursor:pointer;font-size:12px;transition:0.2s;}
+.day-tab.ao{background:#f97316;color:white;border-color:#f97316;}
+.day-tab.ap{background:#a855f7;color:white;border-color:#a855f7;}
+.menu-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.menu-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#0f0f0f;border:1px solid #2c2c2c;border-radius:10px;padding:10px 14px;gap:8px;flex-wrap:wrap;
+}
+.menu-ex{font-size:13px;color:#f97316;}
+.menu-ex.purple{color:#a855f7;}
+.menu-meta{color:#6b7280;font-size:12px;}
+
+/* ========================================
+   FIREBASE BANNER
+======================================== */
+.firebase-banner{background:#0d1a2e;border:1px solid #1e3a5f;border-radius:16px;padding:20px 24px;margin-bottom:20px;}
+.firebase-banner h3{color:#38bdf8;font-size:13px;letter-spacing:2px;margin-bottom:10px;}
+.firebase-banner p{color:#64748b;font-size:12px;line-height:1.8;}
+.firebase-banner code{background:#0a0f1e;color:#7dd3fc;padding:2px 8px;border-radius:6px;font-size:11px;}
+.firebase-banner a{color:#38bdf8;}
+
+/* ========================================
+   MISC
+======================================== */
+.empty{color:#4b5563;font-style:italic;font-size:13px;padding:10px 0;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;}
+.overlay.open{display:block;}
+.hamburger{
+  display:none;position:fixed;top:12px;left:12px;z-index:300;
+  width:42px;height:42px;border-radius:12px;border:none;background:#181818;
+  cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+}
+.hamburger span{display:block;width:20px;height:2px;background:#f97316;border-radius:2px;}
+
+/* ========================================
+   MOBILE  ≤ 700px
+======================================== */
+@media(max-width:700px){
+  .hamburger{display:flex;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:none;}
+  .main{margin-left:0;width:100%;padding:16px;padding-top:64px;}
+  .cards-grid{grid-template-columns:1fr 1fr;}
+  .hero{padding:28px 22px;}
+  .hero h1{font-size:28px;}
+  .add-form{grid-template-columns:1fr;}
+  .workout-grid{grid-template-columns:1fr;}
+}
