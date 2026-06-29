@@ -183,3 +183,44 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
   .add-form{grid-template-columns:1fr;}
   .workout-grid{grid-template-columns:1fr;}
 }
+
+/* ========================================
+   数字入力 +/- ボタン
+======================================== */
+.num-input-wrap{
+  display:flex;align-items:center;gap:0;
+  border:1px solid #2c2c2c;border-radius:12px;overflow:hidden;
+  background:#0f0f0f;
+}
+.num-input-wrap input{
+  flex:1;text-align:center;border:none;border-left:1px solid #2c2c2c;
+  border-right:1px solid #2c2c2c;border-radius:0;min-width:0;
+  background:#0f0f0f;color:white;padding:12px 6px;font-size:16px;
+}
+.num-input-wrap input:focus{outline:none;background:#111;}
+.num-btn{
+  width:44px;height:48px;border:none;background:#181818;color:#9ca3af;
+  font-size:20px;cursor:pointer;transition:0.2s;flex-shrink:0;
+}
+.num-btn:hover{background:#f97316;color:white;}
+.num-btn:active{transform:scale(0.95);}
+
+/* ========================================
+   Weekly Menu — 動画リンク
+======================================== */
+.menu-row{flex-wrap:nowrap;align-items:center;}
+.menu-row-left{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;}
+.menu-row-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.video-btn{
+  display:inline-block;background:#dc2626;color:white;
+  padding:6px 12px;border-radius:8px;font-size:12px;
+  text-decoration:none;transition:0.2s;white-space:nowrap;
+}
+.video-btn:hover{background:#b91c1c;}
+.video-btn.purple-video{background:#a855f7;}
+.video-btn.purple-video:hover{background:#9333ea;}
+
+@media(max-width:700px){
+  .menu-row{flex-wrap:wrap;}
+  .menu-row-right{width:100%;justify-content:flex-end;}
+}

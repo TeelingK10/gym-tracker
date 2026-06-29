@@ -4,9 +4,6 @@
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzFBkb_E9AhLmZWk7Aw_eiFgZO_IFKMp6dtSuJsbVGISpuFqjrisGHPzcT8CVKtdBaE/exec';
 
-// ============================================================
-//  STATE
-// ============================================================
 const state = {
   user:      null,
   page:      'log',
@@ -70,6 +67,7 @@ async function loadMenus(user) {
     exercise:    r.exercise,
     target_sets: parseInt(r.target_sets),
     target_reps: parseInt(r.target_reps),
+    video_url:   r.video_url || '',
   }));
 }
 
@@ -116,6 +114,18 @@ function loginHTML() {
         </div>
         <div class="login-hint">ユーザーを選択してください</div>
       </div>
+    </div>`;
+}
+
+// 数字入力用コンポーネント（+/-ボタン付き）
+function numInput(name, placeholder, value='', step=1, isK=true) {
+  const pf = !isK ? 'pf' : '';
+  return `
+    <div class="num-input-wrap">
+      <button type="button" class="num-btn minus" data-target="${name}">−</button>
+      <input name="${name}" type="number" inputmode="numeric" pattern="[0-9]*"
+        placeholder="${placeholder}" value="${value}" step="${step}" required class="${pf}">
+      <button type="button" class="num-btn plus" data-target="${name}">＋</button>
     </div>`;
 }
 
@@ -166,9 +176,9 @@ function appHTML() {
         <div class="section-title ${ac}">➕ ADD WORKOUT</div>
         <form class="add-form" id="form-workout">
           <input name="exercise" placeholder="種目名" required class="${!isK?'pf':''}">
-          <input name="weight" type="number" step="0.5" placeholder="重量 kg" required class="${!isK?'pf':''}">
-          <input name="reps" type="number" placeholder="Reps" required class="${!isK?'pf':''}">
-          <input name="sets" type="number" placeholder="Sets" required class="${!isK?'pf':''}">
+          ${numInput('weight', '重量 kg', '', 0.5, isK)}
+          ${numInput('reps', 'Reps', '', 1, isK)}
+          ${numInput('sets', 'Sets', '', 1, isK)}
           <input name="date" type="date" value="${today}" required class="${!isK?'pf':''}">
           <button type="submit" class="submit-btn ${ac}">+ 追加</button>
         </form>
@@ -212,6 +222,7 @@ function appHTML() {
       </div>`;
 
   } else {
+    // MENU
     const ad = state.activeDay;
     const dayMenus = state.menus.filter(m => m.day === ad);
     pageHTML = `
@@ -226,17 +237,23 @@ function appHTML() {
           ${dayMenus.length === 0 ? '<p class="empty">この曜日のメニューはありません</p>' : ''}
           ${dayMenus.map(m => `
             <div class="menu-row">
-              <span class="menu-ex ${!isK?'purple':''}">${m.exercise}</span>
-              <span class="menu-meta">${m.target_sets}sets × ${m.target_reps}reps</span>
-              ${pr[m.exercise] ? `<span class="menu-meta">PR: ${pr[m.exercise]}kg</span>` : ''}
-              <button class="del-btn" data-del-menu="${m.id}">削除</button>
+              <div class="menu-row-left">
+                <span class="menu-ex ${!isK?'purple':''}">${m.exercise}</span>
+                <span class="menu-meta">${m.target_sets}sets × ${m.target_reps}reps</span>
+                ${pr[m.exercise] ? `<span class="menu-meta">PR: ${pr[m.exercise]}kg</span>` : ''}
+              </div>
+              <div class="menu-row-right">
+                ${m.video_url ? `<a href="${m.video_url}" target="_blank" class="video-btn ${!isK?'purple-video':''}">▶ 動画</a>` : ''}
+                <button class="del-btn" data-del-menu="${m.id}">削除</button>
+              </div>
             </div>`).join('')}
         </div>
         <form class="add-form" id="form-menu">
           <input type="hidden" name="day" value="${ad}">
           <input name="exercise" placeholder="種目名" required class="${!isK?'pf':''}">
-          <input name="target_sets" type="number" placeholder="Sets" required class="${!isK?'pf':''}">
-          <input name="target_reps" type="number" placeholder="Reps" required class="${!isK?'pf':''}">
+          ${numInput('target_sets', 'Sets', '', 1, isK)}
+          ${numInput('target_reps', 'Reps', '', 1, isK)}
+          <input name="video_url" type="url" inputmode="url" placeholder="動画URL（任意）" class="${!isK?'pf':''}">
           <button type="submit" class="submit-btn ${ac}">+ 追加</button>
         </form>
       </div>`;
@@ -281,7 +298,21 @@ function bindEvents() {
     tab.addEventListener('click', () => { state.activeDay = parseInt(tab.dataset.day); render(); });
   });
 
-  // Add Workout — 楽観的更新
+  // +/- ボタン
+  document.querySelectorAll('.num-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = btn.closest('.num-input-wrap').querySelector('input');
+      const step  = parseFloat(input.step) || 1;
+      const val   = parseFloat(input.value) || 0;
+      if (btn.classList.contains('plus')) {
+        input.value = Math.round((val + step) * 100) / 100;
+      } else {
+        input.value = Math.max(0, Math.round((val - step) * 100) / 100);
+      }
+    });
+  });
+
+  // Add Workout
   document.getElementById('form-workout')?.addEventListener('submit', async e => {
     e.preventDefault();
     const f = e.target;
@@ -292,18 +323,16 @@ function bindEvents() {
       sets:     parseInt(f.sets.value),
       date:     f.date.value,
     };
-    // 即座に画面に追加
     state.workouts.unshift({ id: 'temp-' + Date.now(), user: state.user, ...data });
     f.reset();
     f.date.value = new Date().toISOString().slice(0,10);
     render();
-    // バックグラウンドでGASに保存してIDを正式なものに更新
     await saveWorkout(state.user, data);
     state.workouts = await loadWorkouts(state.user);
     render();
   });
 
-  // Add Menu — 楽観的更新
+  // Add Menu
   document.getElementById('form-menu')?.addEventListener('submit', async e => {
     e.preventDefault();
     const f = e.target;
@@ -314,39 +343,34 @@ function bindEvents() {
       exercise:    f.exercise.value.trim(),
       target_sets: parseInt(f.target_sets.value),
       target_reps: parseInt(f.target_reps.value),
+      video_url:   f.video_url.value.trim(),
     };
-    // 即座に画面に追加
     state.menus.push({ id: 'temp-' + Date.now(), user: state.user, ...data });
     f.reset();
     render();
-    // バックグラウンドでGASに保存
     await saveMenu(state.user, data);
     state.menus = await loadMenus(state.user);
     render();
   });
 
-  // Delete Workout — 楽観的更新
+  // Delete Workout
   document.querySelectorAll('[data-del-workout]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.dataset.delWorkout;
-      // 即座に画面から削除
       state.workouts = state.workouts.filter(w => w.id !== id);
       render();
-      // バックグラウンドでGASから削除
       await removeWorkout(id);
       state.workouts = await loadWorkouts(state.user);
       render();
     });
   });
 
-  // Delete Menu — 楽観的更新
+  // Delete Menu
   document.querySelectorAll('[data-del-menu]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const id = btn.dataset.delMenu;
-      // 即座に画面から削除
       state.menus = state.menus.filter(m => m.id !== id);
       render();
-      // バックグラウンドでGASから削除
       await removeMenu(id);
       state.menus = await loadMenus(state.user);
       render();
@@ -361,9 +385,6 @@ function bindEvents() {
   ov?.addEventListener('click', () => { sb.classList.remove('open'); ov.classList.remove('open'); });
 }
 
-// ============================================================
-//  LOGIN
-// ============================================================
 async function login(user) {
   state.user = user;
   state.page = 'log';
