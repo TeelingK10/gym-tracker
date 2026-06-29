@@ -224,3 +224,29 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
   .menu-row{flex-wrap:wrap;}
   .menu-row-right{width:100%;justify-content:flex-end;}
 }
+
+/* ========================================
+   グラフ — 種目セレクター
+======================================== */
+.ex-select-wrap{
+  display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;
+}
+.ex-sel-btn{
+  padding:5px 12px;border-radius:10px;border:1px solid #2c2c2c;
+  background:#0f0f0f;color:#9ca3af;cursor:pointer;font-size:12px;transition:0.2s;
+}
+.ex-sel-btn.active-o{background:#f97316;color:white;border-color:#f97316;}
+.ex-sel-btn.active-p{background:#a855f7;color:white;border-color:#a855f7;}
+
+/* ========================================
+   Weekly Menu — ワンタップ記録ボタン
+======================================== */
+.quick-add-btn{
+  padding:6px 12px;border-radius:8px;border:none;
+  background:#f97316;color:white;font-size:12px;
+  cursor:pointer;transition:0.2s;white-space:nowrap;font-weight:600;
+}
+.quick-add-btn:hover{background:#ea6c10;}
+.quick-add-btn.purple-quick{background:#a855f7;}
+.quick-add-btn.purple-quick:hover{background:#9333ea;}
+.quick-add-btn:disabled{background:#4b5563;cursor:default;}

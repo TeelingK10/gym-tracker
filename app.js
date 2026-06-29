@@ -5,11 +5,12 @@
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQkv4WQXsrVHVHwA_p2p7_HxtFd_WUNClF3nP0Ocp5ccToMqBm8NxpAdz8rx8BAIYA/exec';
 
 const state = {
-  user:      null,
-  page:      'log',
-  workouts:  [],
-  menus:     [],
-  activeDay: todayIndex(),
+  user:        null,
+  page:        'log',
+  workouts:    [],
+  menus:       [],
+  activeDay:   todayIndex(),
+  selectedEx:  null, // グラフ用選択種目
 };
 
 const DAY_NAMES = ['月','火','水','木','金','土','日'];
@@ -92,6 +93,24 @@ function getPR(workouts) {
   return map;
 }
 
+// 種目の前回記録を取得
+function getLastRecord(exercise) {
+  const records = state.workouts.filter(w => w.exercise === exercise);
+  return records.length > 0 ? records[0] : null;
+}
+
+// 数字入力コンポーネント
+function numInput(name, placeholder, value='', step=1, isK=true) {
+  const pf = !isK ? 'pf' : '';
+  return `
+    <div class="num-input-wrap">
+      <button type="button" class="num-btn minus" data-target="${name}">−</button>
+      <input name="${name}" type="number" inputmode="numeric" pattern="[0-9]*"
+        placeholder="${placeholder}" value="${value}" step="${step}" required class="${pf}">
+      <button type="button" class="num-btn plus" data-target="${name}">＋</button>
+    </div>`;
+}
+
 // ============================================================
 //  HTML BUILDERS
 // ============================================================
@@ -101,9 +120,7 @@ function loginHTML() {
       <div class="login-box">
         <div class="app-title">GYM</div>
         <div class="app-sub">TRAINING TRACKER</div>
-        <div class="status-badge connected">
-          ✅ Google スプレッドシート連携済み
-        </div>
+        <div class="status-badge connected">✅ Google スプレッドシート連携済み</div>
         <div class="user-grid">
           <button class="user-btn kaito" id="btn-kaito">
             <div class="user-avatar">🏋️</div><div>かいと</div>
@@ -117,18 +134,6 @@ function loginHTML() {
     </div>`;
 }
 
-// 数字入力用コンポーネント（+/-ボタン付き）
-function numInput(name, placeholder, value='', step=1, isK=true) {
-  const pf = !isK ? 'pf' : '';
-  return `
-    <div class="num-input-wrap">
-      <button type="button" class="num-btn minus" data-target="${name}">−</button>
-      <input name="${name}" type="number" inputmode="numeric" pattern="[0-9]*"
-        placeholder="${placeholder}" value="${value}" step="${step}" required class="${pf}">
-      <button type="button" class="num-btn plus" data-target="${name}">＋</button>
-    </div>`;
-}
-
 function appHTML() {
   const u     = state.user;
   const isK   = u === 'kaito';
@@ -138,7 +143,7 @@ function appHTML() {
 
   const navItems = [
     ['log',  '📝 Workout Log'],
-    ['pr',   '🏆 Personal Records'],
+    ['pr',   '🏆 Records & Graph'],
     ['menu', '⚙️ Weekly Menu'],
   ];
 
@@ -204,7 +209,31 @@ function appHTML() {
 
   } else if (state.page === 'pr') {
     const sorted = Object.entries(pr).sort((a,b) => a[0].localeCompare(b[0],'ja'));
+    const selEx  = state.selectedEx || (sorted.length > 0 ? sorted[0][0] : null);
+
+    // グラフ用データ
+    let graphHTML = '';
+    if (selEx) {
+      const records = state.workouts
+        .filter(w => w.exercise === selEx && w.date)
+        .sort((a,b) => a.date.localeCompare(b.date));
+      graphHTML = `
+        <div class="section" style="margin-bottom:20px;">
+          <div class="section-title ${ac}">📈 PROGRESS GRAPH</div>
+          <div class="ex-select-wrap">
+            ${sorted.map(([ex]) =>
+              `<button class="ex-sel-btn ${ex===selEx?(isK?'active-o':'active-p'):''}" data-ex="${ex}">${ex}</button>`
+            ).join('')}
+          </div>
+          <div style="position:relative;height:220px;margin-top:16px;">
+            <canvas id="progressChart"></canvas>
+          </div>
+          <div id="chart-labels" data-labels='${JSON.stringify(records.map(r=>r.date))}' data-values='${JSON.stringify(records.map(r=>r.weight))}' data-color="${isK?'249,115,22':'168,85,247'}"></div>
+        </div>`;
+    }
+
     pageHTML = `
+      ${graphHTML}
       <div class="section">
         <div class="section-title ${ac}">🏆 PERSONAL RECORDS</div>
         ${sorted.length === 0 ? '<p class="empty">まだ記録がありません。</p>' : `
@@ -212,7 +241,7 @@ function appHTML() {
           <thead><tr><th>EXERCISE</th><th>BEST WEIGHT</th><th>SESSIONS</th></tr></thead>
           <tbody>
             ${sorted.map(([ex,best]) => `
-              <tr>
+              <tr class="pr-row" data-ex="${ex}">
                 <td>${ex}</td>
                 <td class="prw ${!isK?'purple':''}">${best}<span style="font-size:13px;color:#6b7280;"> kg</span></td>
                 <td style="color:#6b7280;font-size:14px;">${state.workouts.filter(w=>w.exercise===ex).length}回</td>
@@ -225,6 +254,7 @@ function appHTML() {
     // MENU
     const ad = state.activeDay;
     const dayMenus = state.menus.filter(m => m.day === ad);
+
     pageHTML = `
       <div class="section">
         <div class="section-title ${ac}">⚙️ WEEKLY MENU</div>
@@ -235,18 +265,28 @@ function appHTML() {
         </div>
         <div class="menu-list">
           ${dayMenus.length === 0 ? '<p class="empty">この曜日のメニューはありません</p>' : ''}
-          ${dayMenus.map(m => `
+          ${dayMenus.map(m => {
+            const last = getLastRecord(m.exercise);
+            return `
             <div class="menu-row">
               <div class="menu-row-left">
                 <span class="menu-ex ${!isK?'purple':''}">${m.exercise}</span>
                 <span class="menu-meta">${m.target_sets}sets × ${m.target_reps}reps</span>
-                ${pr[m.exercise] ? `<span class="menu-meta">PR: ${pr[m.exercise]}kg</span>` : ''}
+                ${last ? `<span class="menu-meta">前回: ${last.weight}kg × ${last.reps}reps</span>` : ''}
               </div>
               <div class="menu-row-right">
                 ${m.video_url ? `<a href="${m.video_url}" target="_blank" class="video-btn ${!isK?'purple-video':''}">▶ 動画</a>` : ''}
+                <button class="quick-add-btn ${!isK?'purple-quick':''}"
+                  data-exercise="${m.exercise}"
+                  data-weight="${last ? last.weight : ''}"
+                  data-reps="${last ? last.reps : m.target_reps}"
+                  data-sets="${last ? last.sets : m.target_sets}">
+                  + 記録
+                </button>
                 <button class="del-btn" data-del-menu="${m.id}">削除</button>
               </div>
-            </div>`).join('')}
+            </div>`;
+          }).join('')}
         </div>
         <form class="add-form" id="form-menu">
           <input type="hidden" name="day" value="${ad}">
@@ -266,7 +306,7 @@ function appHTML() {
         <div class="hero ${u}">
           <div class="hero-tag">NO EXCUSES • ${isK ? 'かいと' : 'なな'}</div>
           <h1>Gym Tracker</h1>
-          <div class="hero-sub">${state.workouts.length} workouts • ${Object.keys(pr).length} exercises</div>
+          <div class="hero-sub">${state.workouts.length} workouts • ${Object.keys(getPR(state.workouts)).length} exercises</div>
         </div>
         ${pageHTML}
       </div>
@@ -277,10 +317,52 @@ function appHTML() {
 //  RENDER & EVENTS
 // ============================================================
 const root = document.getElementById('root');
+let chartInstance = null;
 
 function render() {
   root.innerHTML = state.user ? appHTML() : loginHTML();
   bindEvents();
+  initChart();
+}
+
+function initChart() {
+  const el = document.getElementById('chart-labels');
+  const canvas = document.getElementById('progressChart');
+  if (!el || !canvas) return;
+
+  const labels = JSON.parse(el.dataset.labels);
+  const values = JSON.parse(el.dataset.values);
+  const color  = el.dataset.color;
+
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  if (typeof Chart === 'undefined') return;
+
+  chartInstance = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: `rgb(${color})`,
+        backgroundColor: `rgba(${color},0.15)`,
+        borderWidth: 2.5,
+        pointBackgroundColor: `rgb(${color})`,
+        pointRadius: 5,
+        fill: true,
+        tension: 0.3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#6b7280', font: { size: 11 } }, grid: { color: '#1a1a1a' } },
+        y: { ticks: { color: '#6b7280', font: { size: 11 } }, grid: { color: '#1a1a1a' } },
+      }
+    }
+  });
 }
 
 function bindEvents() {
@@ -298,6 +380,14 @@ function bindEvents() {
     tab.addEventListener('click', () => { state.activeDay = parseInt(tab.dataset.day); render(); });
   });
 
+  // グラフ種目選択
+  document.querySelectorAll('[data-ex]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.selectedEx = btn.dataset.ex;
+      render();
+    });
+  });
+
   // +/- ボタン
   document.querySelectorAll('.num-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -309,6 +399,27 @@ function bindEvents() {
       } else {
         input.value = Math.max(0, Math.round((val - step) * 100) / 100);
       }
+    });
+  });
+
+  // ワンタップ記録ボタン
+  document.querySelectorAll('.quick-add-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const today = new Date().toISOString().slice(0,10);
+      const data = {
+        exercise: btn.dataset.exercise,
+        weight:   parseFloat(btn.dataset.weight) || 0,
+        reps:     parseInt(btn.dataset.reps) || 0,
+        sets:     parseInt(btn.dataset.sets) || 0,
+        date:     today,
+      };
+      btn.textContent = '✓ 追加!';
+      btn.disabled = true;
+      state.workouts.unshift({ id: 'temp-' + Date.now(), user: state.user, ...data });
+      await saveWorkout(state.user, data);
+      state.workouts = await loadWorkouts(state.user);
+      state.page = 'log';
+      render();
     });
   });
 
