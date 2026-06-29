@@ -2,7 +2,7 @@
 //  GYM TRACKER — Google Apps Script版
 // ============================================================
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzFBkb_E9AhLmZWk7Aw_eiFgZO_IFKMp6dtSuJsbVGISpuFqjrisGHPzcT8CVKtdBaE/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQkv4WQXsrVHVHwA_p2p7_HxtFd_WUNClF3nP0Ocp5ccToMqBm8NxpAdz8rx8BAIYA/exec';
 
 const state = {
   user:      null,
