@@ -3,7 +3,7 @@
 //  GASのデプロイURLを下記に貼り付けてください
 // ============================================================
 
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyqbCHds1YLRnpRJi0UH4hPwvATurr_OXoPOiPyqP0UbnoSTW4DqclkpuhS3e72zSFN/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzFBkb_E9AhLmZWk7Aw_eiFgZO_IFKMp6dtSuJsbVGISpuFqjrisGHPzcT8CVKtdBaE/exec';
 
 // ============================================================
 //  STATE
