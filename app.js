@@ -1,6 +1,5 @@
 // ============================================================
 //  GYM TRACKER — Google Apps Script版
-//  GASのデプロイURLを下記に貼り付けてください
 // ============================================================
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzFBkb_E9AhLmZWk7Aw_eiFgZO_IFKMp6dtSuJsbVGISpuFqjrisGHPzcT8CVKtdBaE/exec';
@@ -9,8 +8,8 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzFBkb_E9AhLmZWk7Aw_eiF
 //  STATE
 // ============================================================
 const state = {
-  user:      null,   // 'kaito' | 'nana'
-  page:      'log',  // 'log' | 'pr' | 'menu'
+  user:      null,
+  page:      'log',
   workouts:  [],
   menus:     [],
   activeDay: todayIndex(),
@@ -24,34 +23,32 @@ function todayIndex() {
 }
 
 // ============================================================
-//  GAS API ヘルパー
+//  GAS API
 // ============================================================
 async function gasGet(params) {
   const url = GAS_URL + '?' + new URLSearchParams(params).toString();
-  const res  = await fetch(url);
+  const res = await fetch(url);
   return res.json();
 }
 
 async function gasPost(params) {
-  const url  = GAS_URL + '?' + new URLSearchParams(params).toString();
-  const res  = await fetch(url, { method: 'POST' });
+  const url = GAS_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url, { method: 'POST' });
   return res.json();
 }
 
-// ── Workouts ──
 async function loadWorkouts(user) {
   const res = await gasGet({ action: 'getWorkouts', user });
-  if (!res.ok) return [];
-  // workoutsシート用にフィールドを整理
+  if (!res.ok) return state.workouts;
   return res.rows.map(r => ({
-    id:       r.id,
+    id:       String(r.id),
     user:     r.user,
     exercise: r.exercise,
     weight:   parseFloat(r.weight),
     reps:     parseInt(r.reps),
     sets:     parseInt(r.sets),
     date:     r.date,
-  })).sort((a,b) => b.id - a.id); // 新しい順
+  })).sort((a,b) => b.id - a.id);
 }
 
 async function saveWorkout(user, data) {
@@ -62,12 +59,11 @@ async function removeWorkout(id) {
   await gasPost({ action: 'deleteWorkout', id });
 }
 
-// ── Menus ──
 async function loadMenus(user) {
   const res = await gasGet({ action: 'getMenus', user });
-  if (!res.ok) return [];
+  if (!res.ok) return state.menus;
   return res.rows.map(r => ({
-    id:          r.id,
+    id:          String(r.id),
     user:        r.user,
     day:         parseInt(r.day),
     order:       parseInt(r.order),
@@ -108,7 +104,7 @@ function loginHTML() {
         <div class="app-title">GYM</div>
         <div class="app-sub">TRAINING TRACKER</div>
         <div class="status-badge connected">
-          ✅ Google スプレッドシート連携済み — データはクラウドに保存されます
+          ✅ Google スプレッドシート連携済み
         </div>
         <div class="user-grid">
           <button class="user-btn kaito" id="btn-kaito">
@@ -130,12 +126,12 @@ function appHTML() {
   const pr    = getPR(state.workouts);
   const today = new Date().toISOString().slice(0,10);
 
-  // ── Sidebar ──
   const navItems = [
     ['log',  '📝 Workout Log'],
     ['pr',   '🏆 Personal Records'],
     ['menu', '⚙️ Weekly Menu'],
   ];
+
   const sidebar = `
     <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
     <div class="overlay" id="overlay"></div>
@@ -153,7 +149,6 @@ function appHTML() {
       <button class="logout-btn" id="btn-logout">← ユーザー切替</button>
     </div>`;
 
-  // ── Page content ──
   let pageHTML = '';
 
   if (state.page === 'log') {
@@ -167,24 +162,20 @@ function appHTML() {
         <div class="stat-card"><div class="stat-label">VOLUME</div><div class="stat-val ${ac}">${(vol/1000).toFixed(1)}<span style="font-size:16px;color:#6b7280;"> t</span></div></div>
         <div class="stat-card"><div class="stat-label">EXERCISES</div><div class="stat-val ${ac}">${Object.keys(pr).length}</div></div>
       </div>
-
       <div class="section">
         <div class="section-title ${ac}">➕ ADD WORKOUT</div>
         <form class="add-form" id="form-workout">
           <input name="exercise" placeholder="種目名" required class="${!isK?'pf':''}">
           <input name="weight" type="number" step="0.5" placeholder="重量 kg" required class="${!isK?'pf':''}">
-          <input name="reps"   type="number" placeholder="Reps" required class="${!isK?'pf':''}">
-          <input name="sets"   type="number" placeholder="Sets" required class="${!isK?'pf':''}">
-          <input name="date"   type="date"   value="${today}" required class="${!isK?'pf':''}">
+          <input name="reps" type="number" placeholder="Reps" required class="${!isK?'pf':''}">
+          <input name="sets" type="number" placeholder="Sets" required class="${!isK?'pf':''}">
+          <input name="date" type="date" value="${today}" required class="${!isK?'pf':''}">
           <button type="submit" class="submit-btn ${ac}">+ 追加</button>
         </form>
       </div>
-
       <div class="section">
         <div class="section-title ${ac}">📝 WORKOUT LOG</div>
-        ${state.workouts.length === 0
-          ? '<p class="empty">まだ記録がありません。最初のワークアウトを追加しましょう！</p>'
-          : ''}
+        ${state.workouts.length === 0 ? '<p class="empty">まだ記録がありません。最初のワークアウトを追加しましょう！</p>' : ''}
         <div class="workout-grid">
           ${state.workouts.map(w => `
             <div class="workout-card ${!isK?'np':''}">
@@ -203,30 +194,26 @@ function appHTML() {
 
   } else if (state.page === 'pr') {
     const sorted = Object.entries(pr).sort((a,b) => a[0].localeCompare(b[0],'ja'));
-
     pageHTML = `
       <div class="section">
         <div class="section-title ${ac}">🏆 PERSONAL RECORDS</div>
-        ${sorted.length === 0
-          ? '<p class="empty">まだ記録がありません。</p>'
-          : `<table class="pr-table">
-              <thead><tr><th>EXERCISE</th><th>BEST WEIGHT</th><th>SESSIONS</th></tr></thead>
-              <tbody>
-                ${sorted.map(([ex,best]) => `
-                  <tr>
-                    <td>${ex}</td>
-                    <td class="prw ${!isK?'purple':''}">${best}<span style="font-size:13px;color:#6b7280;"> kg</span></td>
-                    <td style="color:#6b7280;font-size:14px;">${state.workouts.filter(w=>w.exercise===ex).length}回</td>
-                  </tr>`).join('')}
-              </tbody>
-            </table>`}
+        ${sorted.length === 0 ? '<p class="empty">まだ記録がありません。</p>' : `
+        <table class="pr-table">
+          <thead><tr><th>EXERCISE</th><th>BEST WEIGHT</th><th>SESSIONS</th></tr></thead>
+          <tbody>
+            ${sorted.map(([ex,best]) => `
+              <tr>
+                <td>${ex}</td>
+                <td class="prw ${!isK?'purple':''}">${best}<span style="font-size:13px;color:#6b7280;"> kg</span></td>
+                <td style="color:#6b7280;font-size:14px;">${state.workouts.filter(w=>w.exercise===ex).length}回</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`}
       </div>`;
 
   } else {
-    // MENU
-    const ad       = state.activeDay;
+    const ad = state.activeDay;
     const dayMenus = state.menus.filter(m => m.day === ad);
-
     pageHTML = `
       <div class="section">
         <div class="section-title ${ac}">⚙️ WEEKLY MENU</div>
@@ -247,7 +234,7 @@ function appHTML() {
         </div>
         <form class="add-form" id="form-menu">
           <input type="hidden" name="day" value="${ad}">
-          <input name="exercise"    placeholder="種目名" required class="${!isK?'pf':''}">
+          <input name="exercise" placeholder="種目名" required class="${!isK?'pf':''}">
           <input name="target_sets" type="number" placeholder="Sets" required class="${!isK?'pf':''}">
           <input name="target_reps" type="number" placeholder="Reps" required class="${!isK?'pf':''}">
           <button type="submit" class="submit-btn ${ac}">+ 追加</button>
@@ -280,79 +267,93 @@ function render() {
 }
 
 function bindEvents() {
-  // Login
   document.getElementById('btn-kaito')?.addEventListener('click', () => login('kaito'));
   document.getElementById('btn-nana')?.addEventListener('click',  () => login('nana'));
   document.getElementById('btn-logout')?.addEventListener('click', () => {
     state.user = null; state.workouts = []; state.menus = []; render();
   });
 
-  // Navigation
   document.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', () => { state.page = btn.dataset.page; render(); });
   });
 
-  // Day tabs
   document.querySelectorAll('[data-day]').forEach(tab => {
     tab.addEventListener('click', () => { state.activeDay = parseInt(tab.dataset.day); render(); });
   });
 
-  // Add Workout
+  // Add Workout — 楽観的更新
   document.getElementById('form-workout')?.addEventListener('submit', async e => {
     e.preventDefault();
     const f = e.target;
-    const btn = f.querySelector('button[type=submit]');
-    btn.textContent = '保存中...'; btn.disabled = true;
-    await saveWorkout(state.user, {
+    const data = {
       exercise: f.exercise.value.trim(),
       weight:   parseFloat(f.weight.value),
       reps:     parseInt(f.reps.value),
       sets:     parseInt(f.sets.value),
       date:     f.date.value,
-    });
+    };
+    // 即座に画面に追加
+    state.workouts.unshift({ id: 'temp-' + Date.now(), user: state.user, ...data });
+    f.reset();
+    f.date.value = new Date().toISOString().slice(0,10);
+    render();
+    // バックグラウンドでGASに保存してIDを正式なものに更新
+    await saveWorkout(state.user, data);
     state.workouts = await loadWorkouts(state.user);
     render();
   });
 
-  // Add Menu
+  // Add Menu — 楽観的更新
   document.getElementById('form-menu')?.addEventListener('submit', async e => {
     e.preventDefault();
-    const f   = e.target;
-    const btn = f.querySelector('button[type=submit]');
-    btn.textContent = '保存中...'; btn.disabled = true;
+    const f = e.target;
     const day = parseInt(f.day.value);
-    await saveMenu(state.user, {
+    const data = {
       day,
       order:       state.menus.filter(m => m.day === day).length + 1,
       exercise:    f.exercise.value.trim(),
       target_sets: parseInt(f.target_sets.value),
       target_reps: parseInt(f.target_reps.value),
-    });
+    };
+    // 即座に画面に追加
+    state.menus.push({ id: 'temp-' + Date.now(), user: state.user, ...data });
+    f.reset();
+    render();
+    // バックグラウンドでGASに保存
+    await saveMenu(state.user, data);
     state.menus = await loadMenus(state.user);
     render();
   });
 
-  // Delete Workout
+  // Delete Workout — 楽観的更新
   document.querySelectorAll('[data-del-workout]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      btn.textContent = '削除中...'; btn.disabled = true;
-      await removeWorkout(btn.dataset.delWorkout);
+      const id = btn.dataset.delWorkout;
+      // 即座に画面から削除
+      state.workouts = state.workouts.filter(w => w.id !== id);
+      render();
+      // バックグラウンドでGASから削除
+      await removeWorkout(id);
       state.workouts = await loadWorkouts(state.user);
       render();
     });
   });
 
-  // Delete Menu
+  // Delete Menu — 楽観的更新
   document.querySelectorAll('[data-del-menu]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      btn.textContent = '削除中...'; btn.disabled = true;
-      await removeMenu(btn.dataset.delMenu);
+      const id = btn.dataset.delMenu;
+      // 即座に画面から削除
+      state.menus = state.menus.filter(m => m.id !== id);
+      render();
+      // バックグラウンドでGASから削除
+      await removeMenu(id);
       state.menus = await loadMenus(state.user);
       render();
     });
   });
 
-  // Hamburger (mobile)
+  // Hamburger
   const hb = document.getElementById('hamburger');
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('overlay');
@@ -372,5 +373,4 @@ async function login(user) {
   render();
 }
 
-// ── Start ──
 render();
