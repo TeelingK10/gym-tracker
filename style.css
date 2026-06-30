@@ -335,3 +335,102 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
   .cal-cell{font-size:11px;border-radius:8px;}
   .cal-sum-val{font-size:18px;}
 }
+
+/* ========================================
+   HOME / WIKI TOP
+======================================== */
+.wiki-hero{
+  border-radius:24px;padding:46px 44px;margin-bottom:24px;
+  background:linear-gradient(135deg,#170024 0%,#1a0a00 50%,#0d0017 100%);
+  border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden;
+}
+.wiki-hero::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 15% 20%,rgba(249,115,22,0.18),transparent 45%),
+             radial-gradient(circle at 85% 80%,rgba(168,85,247,0.18),transparent 45%);
+  pointer-events:none;
+}
+.wiki-hero-tag{font-size:11px;letter-spacing:5px;color:#9ca3af;margin-bottom:10px;position:relative;}
+.wiki-hero h1{font-size:38px;font-weight:900;margin-bottom:8px;position:relative;
+  background:linear-gradient(90deg,#f97316,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.wiki-hero-sub{color:#9ca3af;font-size:14px;position:relative;}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+.feature-card{
+  background:#181818;border:1px solid #2c2c2c;border-radius:20px;padding:26px;cursor:pointer;
+  transition:0.2s;text-align:left;position:relative;overflow:hidden;
+}
+.feature-card:hover{transform:translateY(-3px);border-color:#3c3c3c;}
+.feature-card .fc-icon{font-size:30px;margin-bottom:14px;display:block;}
+.feature-card .fc-title{font-size:16px;font-weight:800;letter-spacing:1px;margin-bottom:6px;}
+.feature-card .fc-sub{color:#6b7280;font-size:12px;line-height:1.6;}
+.feature-card .fc-bar{position:absolute;top:0;left:0;right:0;height:3px;}
+.feature-card.fc-gym .fc-bar{background:linear-gradient(90deg,#f97316,#a855f7);}
+.feature-card.fc-money .fc-bar{background:#22c55e;}
+.feature-card.fc-shops .fc-bar{background:#38bdf8;}
+.feature-card .fc-stat{font-size:22px;font-weight:800;margin-top:12px;}
+.feature-card.fc-money .fc-stat{color:#4ade80;}
+.feature-card.fc-shops .fc-stat{color:#38bdf8;}
+
+/* トップへ戻る簡易ナビ */
+.subnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.subnav-btn{
+  padding:9px 16px;border-radius:12px;border:1px solid #2c2c2c;background:#181818;
+  color:#9ca3af;font-size:13px;cursor:pointer;transition:0.2s;font-weight:600;
+}
+.subnav-btn:hover{background:#222;color:white;}
+.subnav-btn.active{color:white;}
+.subnav-btn.active.acc-orange{background:rgba(249,115,22,0.2);border-color:#f97316;color:#f97316;}
+.subnav-btn.active.acc-purple{background:rgba(168,85,247,0.2);border-color:#a855f7;color:#a855f7;}
+.subnav-btn.active.acc-green{background:rgba(34,197,94,0.2);border-color:#22c55e;color:#4ade80;}
+.subnav-btn.active.acc-blue{background:rgba(56,189,248,0.2);border-color:#38bdf8;color:#38bdf8;}
+
+/* ========================================
+   MONEY (家計簿)
+======================================== */
+.money-stat-income{color:#4ade80 !important;}
+.money-stat-expense{color:#f87171 !important;}
+.money-stat-balance{color:#38bdf8 !important;}
+.type-toggle{display:flex;gap:8px;grid-column:1 / -1;}
+.type-toggle label{
+  flex:1;text-align:center;padding:12px;border-radius:12px;border:1px solid #2c2c2c;
+  background:#0f0f0f;color:#9ca3af;cursor:pointer;font-size:14px;font-weight:600;transition:0.2s;
+}
+.type-toggle input{display:none;}
+.type-toggle input:checked + span{display:inline-block;}
+.type-toggle label.income-label:has(input:checked){background:rgba(34,197,94,0.18);border-color:#22c55e;color:#4ade80;}
+.type-toggle label.expense-label:has(input:checked){background:rgba(248,113,113,0.18);border-color:#f87171;color:#f87171;}
+
+.money-table{width:100%;border-collapse:collapse;}
+.money-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 10px;border-bottom:1px solid #2c2c2c;}
+.money-table td{padding:11px 10px;border-bottom:1px solid #1a1a1a;font-size:13px;vertical-align:middle;}
+.money-table tr:hover td{background:#111;}
+.money-amount{font-weight:800;font-size:15px;}
+.money-cat-pill{
+  display:inline-block;background:#0f0f0f;border:1px solid #2c2c2c;color:#9ca3af;
+  font-size:11px;padding:3px 10px;border-radius:20px;
+}
+.money-who{font-size:11px;color:#6b7280;}
+.money-who.kaito{color:#f97316;}
+.money-who.nana{color:#a855f7;}
+.del-icon-btn{background:#dc2626;border:none;color:white;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1;}
+.del-icon-btn:hover{background:#b91c1c;}
+
+/* ========================================
+   SHOPS (お店リスト)
+======================================== */
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.shop-card{background:#0f0f0f;border:1px solid #2c2c2c;border-radius:16px;padding:18px;transition:0.2s;position:relative;}
+.shop-card:hover{border-color:#38bdf8;}
+.shop-name{font-size:15px;font-weight:700;color:#38bdf8;margin-bottom:6px;padding-right:60px;}
+.shop-cat{display:inline-block;background:rgba(56,189,248,0.12);color:#38bdf8;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+.shop-area{color:#6b7280;font-size:12px;margin-bottom:8px;}
+.shop-rating{color:#fbbf24;font-size:14px;letter-spacing:1px;margin-bottom:8px;}
+.shop-comment{color:#9ca3af;font-size:12.5px;line-height:1.6;margin-bottom:10px;}
+.shop-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.shop-by{font-size:10px;color:#4b5563;}
+.shop-link{
+  display:inline-block;background:#38bdf8;color:#0f0f0f;font-weight:700;
+  padding:6px 12px;border-radius:8px;font-size:11px;text-decoration:none;
+}
+.shop-link:hover{background:#0ea5e9;}
