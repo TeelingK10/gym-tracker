@@ -1,89 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height:100vh;}
+body{font-family:'Nunito','Segoe UI',sans-serif;background:#15101c;color:white;min-height:100vh;}
+h1,h2,h3,.app-title,.hero h1,.wiki-hero h1,.fc-title,.stat-val,.cal-sum-val,.money-amount,.shop-name{font-family:'Baloo 2','Nunito',sans-serif;}
+button{font-family:inherit;}
 
 /* ========================================
    LOGIN
 ======================================== */
 .login-screen{
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
-  background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
+  background:
+    radial-gradient(circle at 20% 15%,rgba(249,115,22,0.35),transparent 40%),
+    radial-gradient(circle at 80% 85%,rgba(168,85,247,0.35),transparent 40%),
+    linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),
     url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1974&auto=format&fit=crop') center/cover;
 }
 .login-box{
-  width:100%;max-width:400px;background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);
-  border-radius:28px;padding:50px 40px;border:1px solid rgba(255,255,255,0.15);
+  width:100%;max-width:400px;background:rgba(255,255,255,0.12);backdrop-filter:blur(20px);
+  border-radius:36px;padding:50px 40px;border:1px solid rgba(255,255,255,0.2);
+  box-shadow:0 20px 60px rgba(168,85,247,0.25);
 }
-.app-title{font-size:48px;font-weight:900;letter-spacing:6px;text-align:center;margin-bottom:6px;color:white;}
-.app-sub{text-align:center;color:#f97316;letter-spacing:4px;font-size:12px;margin-bottom:36px;}
+.app-title{font-size:52px;font-weight:800;letter-spacing:4px;text-align:center;margin-bottom:6px;
+  background:linear-gradient(90deg,#f97316,#fbbf24,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.app-sub{text-align:center;color:#fbbf24;letter-spacing:4px;font-size:12px;margin-bottom:36px;font-weight:700;}
 .user-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
 .user-btn{
-  padding:20px;border:2px solid transparent;border-radius:18px;cursor:pointer;
-  font-size:15px;font-weight:700;letter-spacing:2px;transition:0.25s;text-align:center;background:none;
+  padding:22px;border:2px solid transparent;border-radius:24px;cursor:pointer;
+  font-size:15px;font-weight:800;letter-spacing:2px;transition:0.2s;text-align:center;background:none;
 }
-.user-btn.kaito{background:rgba(249,115,22,0.15);color:#f97316;border-color:#f97316;}
-.user-btn.kaito:hover{background:#f97316;color:white;}
-.user-btn.nana{background:rgba(168,85,247,0.15);color:#a855f7;border-color:#a855f7;}
-.user-btn.nana:hover{background:#a855f7;color:white;}
-.user-avatar{font-size:34px;margin-bottom:8px;}
-.login-hint{text-align:center;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:1px;}
-.status-badge{border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:12px;line-height:1.6;}
+.user-btn.kaito{background:rgba(249,115,22,0.18);color:#f97316;border-color:#f97316;}
+.user-btn.kaito:hover{background:#f97316;color:white;transform:translateY(-3px) scale(1.03);box-shadow:0 10px 24px rgba(249,115,22,0.4);}
+.user-btn.nana{background:rgba(168,85,247,0.18);color:#a855f7;border-color:#a855f7;}
+.user-btn.nana:hover{background:#a855f7;color:white;transform:translateY(-3px) scale(1.03);box-shadow:0 10px 24px rgba(168,85,247,0.4);}
+.user-avatar{font-size:38px;margin-bottom:8px;}
+.login-hint{text-align:center;color:rgba(255,255,255,0.5);font-size:12px;letter-spacing:1px;}
+.status-badge{border-radius:16px;padding:12px 16px;margin-bottom:20px;font-size:12px;line-height:1.6;font-weight:600;}
 .status-badge.demo{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);color:#f97316;}
-.status-badge.connected{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;}
+.status-badge.connected{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.35);color:#4ade80;}
 
 /* ========================================
    LAYOUT
 ======================================== */
 .app-layout{display:flex;min-height:100vh;}
 .sidebar{
-  width:220px;background:#181818;border-right:1px solid #2c2c2c;
+  width:220px;background:#1c1424;border-right:1px solid #322640;
   padding:28px 18px;display:flex;flex-direction:column;gap:6px;
   position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform 0.3s;
 }
-.sidebar-user{padding:14px 16px;border-radius:14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
-.sidebar-user.kaito{background:rgba(249,115,22,0.15);border:1px solid rgba(249,115,22,0.3);}
-.sidebar-user.nana{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);}
-.sidebar-user .av{font-size:22px;}
-.sidebar-user .uname{font-size:13px;font-weight:700;letter-spacing:1px;}
+.sidebar-user{padding:14px 16px;border-radius:18px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sidebar-user.kaito{background:rgba(249,115,22,0.18);border:1px solid rgba(249,115,22,0.35);}
+.sidebar-user.nana{background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.35);}
+.sidebar-user .av{font-size:24px;}
+.sidebar-user .uname{font-size:13px;font-weight:800;letter-spacing:1px;}
 .sidebar-user.kaito .uname{color:#f97316;}
 .sidebar-user.nana .uname{color:#a855f7;}
 .nav-btn{
-  padding:12px 16px;border-radius:12px;border:none;background:transparent;
-  color:#9ca3af;cursor:pointer;font-size:14px;text-align:left;width:100%;transition:0.2s;
+  padding:13px 16px;border-radius:16px;border:none;background:transparent;
+  color:#9ca3af;cursor:pointer;font-size:14px;font-weight:700;text-align:left;width:100%;transition:0.2s;
 }
-.nav-btn:hover{background:#2c2c2c;color:white;}
-.nav-btn.active-orange{background:rgba(249,115,22,0.2);color:#f97316;}
-.nav-btn.active-purple{background:rgba(168,85,247,0.2);color:#a855f7;}
-.logout-btn{margin-top:auto;padding:12px;border-radius:12px;border:none;background:#dc2626;color:white;cursor:pointer;font-size:13px;width:100%;transition:0.2s;}
-.logout-btn:hover{background:#b91c1c;}
+.nav-btn:hover{background:#2c2240;color:white;transform:translateX(2px);}
+.nav-btn.active-orange{background:rgba(249,115,22,0.22);color:#f97316;box-shadow:0 4px 14px rgba(249,115,22,0.18);}
+.nav-btn.active-purple{background:rgba(168,85,247,0.22);color:#a855f7;box-shadow:0 4px 14px rgba(168,85,247,0.18);}
+.nav-btn.active-green{background:rgba(34,197,94,0.22);color:#4ade80;box-shadow:0 4px 14px rgba(34,197,94,0.18);}
+.nav-btn.active-blue{background:rgba(56,189,248,0.22);color:#38bdf8;box-shadow:0 4px 14px rgba(56,189,248,0.18);}
+.logout-btn{margin-top:auto;padding:13px;border-radius:16px;border:none;background:#dc2626;color:white;cursor:pointer;font-size:13px;font-weight:700;width:100%;transition:0.2s;}
+.logout-btn:hover{background:#b91c1c;transform:translateY(-2px);}
 .main{margin-left:220px;padding:32px;width:calc(100% - 220px);}
 
 /* ========================================
    HERO
 ======================================== */
-.hero{border-radius:24px;padding:40px 44px;margin-bottom:24px;}
-.hero.kaito{background:linear-gradient(135deg,#1a0a00 0%,#3d1500 100%);border:1px solid rgba(249,115,22,0.3);}
-.hero.nana{background:linear-gradient(135deg,#0e001a 0%,#2a0050 100%);border:1px solid rgba(168,85,247,0.3);}
-.hero-tag{font-size:11px;letter-spacing:5px;margin-bottom:8px;}
-.hero.kaito .hero-tag{color:#f97316;}
-.hero.nana .hero-tag{color:#a855f7;}
-.hero h1{font-size:40px;font-weight:900;margin-bottom:6px;}
-.hero-sub{color:#6b7280;font-size:14px;}
+.hero{border-radius:28px;padding:40px 44px;margin-bottom:24px;position:relative;overflow:hidden;}
+.hero.kaito{background:linear-gradient(135deg,#2a0d00 0%,#4d1a00 100%);border:1px solid rgba(249,115,22,0.4);box-shadow:0 12px 36px rgba(249,115,22,0.12);}
+.hero.nana{background:linear-gradient(135deg,#19002b 0%,#36006b 100%);border:1px solid rgba(168,85,247,0.4);box-shadow:0 12px 36px rgba(168,85,247,0.12);}
+.hero-tag{font-size:11px;letter-spacing:5px;margin-bottom:8px;font-weight:800;}
+.hero.kaito .hero-tag{color:#fb923c;}
+.hero.nana .hero-tag{color:#c084fc;}
+.hero h1{font-size:42px;font-weight:800;margin-bottom:6px;}
+.hero-sub{color:#9ca3af;font-size:14px;font-weight:600;}
 
 /* ========================================
    STATS
 ======================================== */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
-.stat-card{background:#181818;border-radius:18px;padding:22px;border:1px solid #2c2c2c;}
-.stat-label{font-size:11px;letter-spacing:3px;color:#6b7280;margin-bottom:8px;}
-.stat-val{font-size:30px;font-weight:800;}
+.stat-card{background:#1c1424;border-radius:22px;padding:22px;border:1px solid #322640;transition:0.2s;}
+.stat-card:hover{transform:translateY(-2px);border-color:#473659;}
+.stat-label{font-size:11px;letter-spacing:3px;color:#8b8398;margin-bottom:8px;font-weight:700;}
+.stat-val{font-size:32px;font-weight:800;}
 .stat-val.orange{color:#f97316;}
 .stat-val.purple{color:#a855f7;}
 
 /* ========================================
    SECTION
 ======================================== */
-.section{background:#181818;border-radius:20px;padding:24px;margin-bottom:20px;border:1px solid #2c2c2c;}
-.section-title{font-size:13px;letter-spacing:3px;margin-bottom:18px;}
+.section{background:#1c1424;border-radius:26px;padding:24px;margin-bottom:20px;border:1px solid #322640;}
+.section-title{font-size:13px;letter-spacing:3px;margin-bottom:18px;font-weight:800;}
 .section-title.orange{color:#f97316;}
 .section-title.purple{color:#a855f7;}
 
@@ -91,57 +102,58 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
    FORM
 ======================================== */
 .add-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
-.add-form input{
-  padding:12px;border:1px solid #2c2c2c;border-radius:12px;
-  background:#0f0f0f;color:white;font-size:15px;width:100%;
+.add-form input, .add-form select{
+  padding:12px;border:1px solid #322640;border-radius:14px;
+  background:#15101c;color:white;font-size:15px;width:100%;font-weight:600;
 }
-.add-form input:focus{outline:none;border-color:#f97316;}
-.add-form input.pf:focus{border-color:#a855f7;}
-.submit-btn{padding:12px;border:none;border-radius:12px;color:white;font-size:15px;cursor:pointer;font-weight:600;transition:0.2s;}
-.submit-btn.orange{background:#f97316;}
-.submit-btn.orange:hover{background:#ea6c10;}
-.submit-btn.purple{background:#a855f7;}
-.submit-btn.purple:hover{background:#9333ea;}
+.add-form input:focus, .add-form select:focus{outline:none;border-color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,0.15);}
+.add-form input.pf:focus{border-color:#a855f7;box-shadow:0 0 0 3px rgba(168,85,247,0.15);}
+.submit-btn{padding:12px;border:none;border-radius:14px;color:white;font-size:15px;cursor:pointer;font-weight:800;transition:0.2s;}
+.submit-btn.orange{background:linear-gradient(135deg,#f97316,#fb923c);}
+.submit-btn.orange:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 20px rgba(249,115,22,0.35);}
+.submit-btn.purple{background:linear-gradient(135deg,#a855f7,#c084fc);}
+.submit-btn.purple:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 20px rgba(168,85,247,0.35);}
 
 /* ========================================
    WORKOUT CARDS
 ======================================== */
 .workout-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
-.workout-card{background:#0f0f0f;border:1px solid #2c2c2c;border-radius:16px;padding:18px;transition:0.2s;position:relative;}
-.workout-card:hover{border-color:#f97316;}
+.workout-card{background:#15101c;border:1px solid #322640;border-radius:20px;padding:18px;transition:0.2s;position:relative;}
+.workout-card:hover{border-color:#f97316;transform:translateY(-2px);}
 .workout-card.np:hover{border-color:#a855f7;}
-.wc-name{color:#f97316;font-size:14px;margin-bottom:12px;font-weight:700;}
+.wc-name{color:#f97316;font-size:14px;margin-bottom:12px;font-weight:800;}
 .wc-name.purple{color:#a855f7;}
 .workout-stats{display:flex;justify-content:space-between;}
-.workout-stats>div span{color:#6b7280;font-size:11px;letter-spacing:1px;display:block;}
+.workout-stats>div span{color:#8b8398;font-size:11px;letter-spacing:1px;display:block;font-weight:700;}
 .workout-stats>div strong{font-size:20px;}
-.workout-date{color:#4b5563;font-size:11px;margin-top:10px;}
-.pr-badge{position:absolute;top:12px;right:12px;background:#7c2d12;color:#fb923c;font-size:10px;padding:2px 8px;border-radius:20px;}
-.pr-badge.pp{background:#3b0764;color:#c084fc;}
-.del-btn{margin-top:12px;background:#dc2626;border:none;color:white;padding:6px 12px;border-radius:8px;font-size:11px;cursor:pointer;}
-.del-btn:hover{background:#b91c1c;}
+.workout-date{color:#5b5468;font-size:11px;margin-top:10px;}
+.pr-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#7c2d12,#c2410c);color:#fed7aa;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:800;}
+.pr-badge.pp{background:linear-gradient(135deg,#3b0764,#7e22ce);color:#e9d5ff;}
+.del-btn{margin-top:12px;background:#dc2626;border:none;color:white;padding:6px 12px;border-radius:14px;font-size:11px;cursor:pointer;font-weight:700;transition:0.2s;}
+.del-btn:hover{background:#b91c1c;transform:scale(1.05);}
 
 /* ========================================
    PR TABLE
 ======================================== */
 .pr-table{width:100%;border-collapse:collapse;}
-.pr-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 12px;border-bottom:1px solid #2c2c2c;}
-.pr-table td{padding:12px;border-bottom:1px solid #1a1a1a;font-size:14px;}
+.pr-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 12px;border-bottom:1px solid #322640;}
+.pr-table td{padding:12px;border-bottom:1px solid #241a30;font-size:14px;}
 .pr-table td.prw{font-size:22px;font-weight:800;color:#f97316;}
 .pr-table td.prw.purple{color:#a855f7;}
-.pr-table tr:hover td{background:#111;}
+.pr-table tr:hover td{background:#241a30;}
 
 /* ========================================
    WEEKLY MENU
 ======================================== */
 .day-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.day-tab{padding:6px 14px;border-radius:10px;border:1px solid #2c2c2c;background:#0f0f0f;color:#9ca3af;cursor:pointer;font-size:12px;transition:0.2s;}
+.day-tab{padding:7px 16px;border-radius:14px;border:1px solid #322640;background:#15101c;color:#9ca3af;cursor:pointer;font-size:12px;font-weight:700;transition:0.2s;}
+.day-tab:hover{transform:translateY(-1px);}
 .day-tab.ao{background:#f97316;color:white;border-color:#f97316;}
 .day-tab.ap{background:#a855f7;color:white;border-color:#a855f7;}
 .menu-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
 .menu-row{
   display:flex;align-items:center;justify-content:space-between;
-  background:#0f0f0f;border:1px solid #2c2c2c;border-radius:10px;padding:10px 14px;gap:8px;flex-wrap:wrap;
+  background:#15101c;border:1px solid #322640;border-radius:14px;padding:10px 14px;gap:8px;flex-wrap:wrap;
 }
 .menu-ex{font-size:13px;color:#f97316;}
 .menu-ex.purple{color:#a855f7;}
@@ -164,7 +176,7 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 .overlay.open{display:block;}
 .hamburger{
   display:none;position:fixed;top:12px;left:12px;z-index:300;
-  width:42px;height:42px;border-radius:12px;border:none;background:#181818;
+  width:42px;height:42px;border-radius:12px;border:none;background:#1c1424;
   cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;
 }
 .hamburger span{display:block;width:20px;height:2px;background:#f97316;border-radius:2px;}
@@ -189,17 +201,17 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 ======================================== */
 .num-input-wrap{
   display:flex;align-items:center;gap:0;
-  border:1px solid #2c2c2c;border-radius:12px;overflow:hidden;
-  background:#0f0f0f;
+  border:1px solid #322640;border-radius:12px;overflow:hidden;
+  background:#15101c;
 }
 .num-input-wrap input{
-  flex:1;text-align:center;border:none;border-left:1px solid #2c2c2c;
-  border-right:1px solid #2c2c2c;border-radius:0;min-width:0;
-  background:#0f0f0f;color:white;padding:12px 6px;font-size:16px;
+  flex:1;text-align:center;border:none;border-left:1px solid #322640;
+  border-right:1px solid #322640;border-radius:0;min-width:0;
+  background:#15101c;color:white;padding:12px 6px;font-size:16px;
 }
-.num-input-wrap input:focus{outline:none;background:#111;}
+.num-input-wrap input:focus{outline:none;background:#241a30;}
 .num-btn{
-  width:44px;height:48px;border:none;background:#181818;color:#9ca3af;
+  width:44px;height:48px;border:none;background:#1c1424;color:#9ca3af;
   font-size:20px;cursor:pointer;transition:0.2s;flex-shrink:0;
 }
 .num-btn:hover{background:#f97316;color:white;}
@@ -213,10 +225,10 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 .menu-row-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .video-btn{
   display:inline-block;background:#dc2626;color:white;
-  padding:6px 12px;border-radius:8px;font-size:12px;
+  padding:6px 12px;border-radius:12px;font-size:12px;
   text-decoration:none;transition:0.2s;white-space:nowrap;
 }
-.video-btn:hover{background:#b91c1c;}
+.video-btn:hover{background:#b91c1c;transform:scale(1.05);}
 .video-btn.purple-video{background:#a855f7;}
 .video-btn.purple-video:hover{background:#9333ea;}
 
@@ -232,8 +244,8 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
   display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;
 }
 .ex-sel-btn{
-  padding:5px 12px;border-radius:10px;border:1px solid #2c2c2c;
-  background:#0f0f0f;color:#9ca3af;cursor:pointer;font-size:12px;transition:0.2s;
+  padding:5px 12px;border-radius:14px;border:1px solid #322640;
+  background:#15101c;color:#9ca3af;cursor:pointer;font-size:12px;transition:0.2s;
 }
 .ex-sel-btn.active-o{background:#f97316;color:white;border-color:#f97316;}
 .ex-sel-btn.active-p{background:#a855f7;color:white;border-color:#a855f7;}
@@ -242,11 +254,11 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
    Weekly Menu — ワンタップ記録ボタン
 ======================================== */
 .quick-add-btn{
-  padding:6px 12px;border-radius:8px;border:none;
+  padding:6px 12px;border-radius:12px;border:none;
   background:#f97316;color:white;font-size:12px;
   cursor:pointer;transition:0.2s;white-space:nowrap;font-weight:600;
 }
-.quick-add-btn:hover{background:#ea6c10;}
+.quick-add-btn:hover{background:#ea6c10;transform:scale(1.05);}
 .quick-add-btn.purple-quick{background:#a855f7;}
 .quick-add-btn.purple-quick:hover{background:#9333ea;}
 .quick-add-btn:disabled{background:#4b5563;cursor:default;}
@@ -259,10 +271,10 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
   margin-bottom:16px;
 }
 .cal-nav-btn{
-  background:#2c2c2c;border:none;color:white;padding:8px 14px;
-  border-radius:10px;cursor:pointer;font-size:14px;transition:0.2s;
+  background:#322640;border:none;color:white;padding:8px 14px;
+  border-radius:14px;cursor:pointer;font-size:14px;transition:0.2s;
 }
-.cal-nav-btn:hover{background:#f97316;}
+.cal-nav-btn:hover{background:#f97316;transform:scale(1.08);}
 .cal-month-label{font-size:16px;font-weight:700;letter-spacing:2px;}
 
 .cal-header{
@@ -282,10 +294,10 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 }
 .cal-cell{
   aspect-ratio:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;border-radius:10px;font-size:13px;cursor:pointer;
+  justify-content:center;border-radius:14px;font-size:13px;cursor:pointer;
   position:relative;border:1px solid transparent;transition:0.2s;color:#9ca3af;
 }
-.cal-cell:hover{background:#2c2c2c;color:white;}
+.cal-cell:hover{background:#322640;color:white;}
 .cal-cell.empty{cursor:default;}
 .cal-cell.empty:hover{background:transparent;}
 .cal-cell.cal-today{border-color:#6b7280;color:white;font-weight:700;}
@@ -310,7 +322,7 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
   gap:10px;margin-bottom:20px;
 }
 .cal-sum-item{
-  background:#0f0f0f;border:1px solid #2c2c2c;border-radius:14px;
+  background:#15101c;border:1px solid #322640;border-radius:14px;
   padding:14px;text-align:center;
 }
 .cal-sum-label{font-size:10px;letter-spacing:2px;color:#6b7280;margin-bottom:6px;}
@@ -318,21 +330,21 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 
 /* カレンダー 詳細 */
 .cal-detail{
-  background:#0f0f0f;border:1px solid #2c2c2c;border-radius:14px;padding:16px;
+  background:#15101c;border:1px solid #322640;border-radius:14px;padding:16px;
 }
 .cal-detail-date{
   font-size:12px;letter-spacing:2px;color:#6b7280;margin-bottom:12px;
 }
 .cal-workout-row{
   display:flex;justify-content:space-between;align-items:center;
-  padding:8px 0;border-bottom:1px solid #1a1a1a;gap:8px;flex-wrap:wrap;
+  padding:8px 0;border-bottom:1px solid #241a30;gap:8px;flex-wrap:wrap;
 }
 .cal-workout-row:last-child{border-bottom:none;}
 .purple-text{color:#a855f7;}
 
 @media(max-width:700px){
   .cal-summary{grid-template-columns:repeat(3,1fr);}
-  .cal-cell{font-size:11px;border-radius:8px;}
+  .cal-cell{font-size:11px;border-radius:12px;}
   .cal-sum-val{font-size:18px;}
 }
 
@@ -340,34 +352,36 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
    HOME / WIKI TOP
 ======================================== */
 .wiki-hero{
-  border-radius:24px;padding:46px 44px;margin-bottom:24px;
-  background:linear-gradient(135deg,#170024 0%,#1a0a00 50%,#0d0017 100%);
-  border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden;
+  border-radius:30px;padding:48px 44px;margin-bottom:24px;
+  background:linear-gradient(135deg,#2b0a3d 0%,#3d1500 50%,#1a0030 100%);
+  border:1px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;
 }
 .wiki-hero::after{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 15% 20%,rgba(249,115,22,0.18),transparent 45%),
-             radial-gradient(circle at 85% 80%,rgba(168,85,247,0.18),transparent 45%);
+  background:radial-gradient(circle at 12% 18%,rgba(249,115,22,0.28),transparent 42%),
+             radial-gradient(circle at 88% 82%,rgba(168,85,247,0.28),transparent 42%),
+             radial-gradient(circle at 50% 50%,rgba(251,191,36,0.08),transparent 60%);
   pointer-events:none;
 }
-.wiki-hero-tag{font-size:11px;letter-spacing:5px;color:#9ca3af;margin-bottom:10px;position:relative;}
-.wiki-hero h1{font-size:38px;font-weight:900;margin-bottom:8px;position:relative;
-  background:linear-gradient(90deg,#f97316,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;}
-.wiki-hero-sub{color:#9ca3af;font-size:14px;position:relative;}
+.wiki-hero-tag{font-size:12px;letter-spacing:5px;color:#fbbf24;margin-bottom:10px;position:relative;font-weight:800;}
+.wiki-hero h1{font-size:42px;font-weight:800;margin-bottom:8px;position:relative;
+  background:linear-gradient(90deg,#f97316,#fbbf24,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.wiki-hero-sub{color:#c4b8d4;font-size:14px;position:relative;font-weight:600;}
 
 .feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
 .feature-card{
-  background:#181818;border:1px solid #2c2c2c;border-radius:20px;padding:26px;cursor:pointer;
-  transition:0.2s;text-align:left;position:relative;overflow:hidden;
+  background:#1c1424;border:1px solid #322640;border-radius:26px;padding:26px;cursor:pointer;
+  transition:0.2s cubic-bezier(.34,1.56,.64,1);text-align:left;position:relative;overflow:hidden;
 }
-.feature-card:hover{transform:translateY(-3px);border-color:#3c3c3c;}
-.feature-card .fc-icon{font-size:30px;margin-bottom:14px;display:block;}
-.feature-card .fc-title{font-size:16px;font-weight:800;letter-spacing:1px;margin-bottom:6px;}
-.feature-card .fc-sub{color:#6b7280;font-size:12px;line-height:1.6;}
-.feature-card .fc-bar{position:absolute;top:0;left:0;right:0;height:3px;}
-.feature-card.fc-gym .fc-bar{background:linear-gradient(90deg,#f97316,#a855f7);}
-.feature-card.fc-money .fc-bar{background:#22c55e;}
-.feature-card.fc-shops .fc-bar{background:#38bdf8;}
+.feature-card:hover{transform:translateY(-5px) scale(1.02);border-color:#473659;box-shadow:0 14px 32px rgba(0,0,0,0.35);}
+.feature-card .fc-icon{font-size:34px;margin-bottom:14px;display:block;}
+.feature-card .fc-title{font-size:17px;font-weight:800;letter-spacing:1px;margin-bottom:6px;}
+.feature-card .fc-sub{color:#8b8398;font-size:12px;line-height:1.6;font-weight:600;}
+.feature-card .fc-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:0 0 8px 8px;}
+.feature-card.fc-gym-k .fc-bar{background:linear-gradient(90deg,#f97316,#fbbf24);}
+.feature-card.fc-gym-n .fc-bar{background:linear-gradient(90deg,#a855f7,#f0abfc);}
+.feature-card.fc-money .fc-bar{background:linear-gradient(90deg,#22c55e,#4ade80);}
+.feature-card.fc-shops .fc-bar{background:linear-gradient(90deg,#38bdf8,#7dd3fc);}
 .feature-card .fc-stat{font-size:22px;font-weight:800;margin-top:12px;}
 .feature-card.fc-money .fc-stat{color:#4ade80;}
 .feature-card.fc-shops .fc-stat{color:#38bdf8;}
@@ -375,52 +389,74 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 /* トップへ戻る簡易ナビ */
 .subnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
 .subnav-btn{
-  padding:9px 16px;border-radius:12px;border:1px solid #2c2c2c;background:#181818;
-  color:#9ca3af;font-size:13px;cursor:pointer;transition:0.2s;font-weight:600;
+  padding:10px 18px;border-radius:16px;border:1px solid #322640;background:#1c1424;
+  color:#8b8398;font-size:13px;cursor:pointer;transition:0.2s;font-weight:700;
 }
-.subnav-btn:hover{background:#222;color:white;}
+.subnav-btn:hover{background:#2c2240;color:white;}
 .subnav-btn.active{color:white;}
-.subnav-btn.active.acc-orange{background:rgba(249,115,22,0.2);border-color:#f97316;color:#f97316;}
-.subnav-btn.active.acc-purple{background:rgba(168,85,247,0.2);border-color:#a855f7;color:#a855f7;}
-.subnav-btn.active.acc-green{background:rgba(34,197,94,0.2);border-color:#22c55e;color:#4ade80;}
-.subnav-btn.active.acc-blue{background:rgba(56,189,248,0.2);border-color:#38bdf8;color:#38bdf8;}
+.subnav-btn.active.acc-orange{background:rgba(249,115,22,0.22);border-color:#f97316;color:#f97316;}
+.subnav-btn.active.acc-purple{background:rgba(168,85,247,0.22);border-color:#a855f7;color:#a855f7;}
+.subnav-btn.active.acc-green{background:rgba(34,197,94,0.22);border-color:#22c55e;color:#4ade80;}
+.subnav-btn.active.acc-blue{background:rgba(56,189,248,0.22);border-color:#38bdf8;color:#38bdf8;}
 
 /* ========================================
-   MONEY (家計簿)
+   MONEY (共有の財布)
 ======================================== */
 .money-stat-income{color:#4ade80 !important;}
 .money-stat-expense{color:#f87171 !important;}
 .money-stat-balance{color:#38bdf8 !important;}
-.type-toggle{display:flex;gap:8px;grid-column:1 / -1;}
+
+.wallet-balance-card{
+  background:linear-gradient(135deg,#052e1f 0%,#064e3b 100%);
+  border:1px solid rgba(34,197,94,0.35);border-radius:26px;
+  padding:30px 34px;margin-bottom:20px;text-align:center;
+  box-shadow:0 14px 32px rgba(34,197,94,0.12);
+}
+.wallet-balance-label{font-size:12px;letter-spacing:3px;color:#6ee7a7;font-weight:800;margin-bottom:8px;}
+.wallet-balance-val{font-size:44px;font-weight:800;color:#4ade80;font-family:'Baloo 2',sans-serif;}
+
+.settle-card{
+  background:#1c1424;border:1px solid #f97316;border-radius:22px;
+  padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+}
+.settle-card.settle-zero{border-color:#22c55e;}
+.settle-text{font-size:14px;color:#e5e7eb;font-weight:600;}
+.settle-text strong{font-size:18px;color:#fbbf24;}
+.settle-zero-text{font-size:14px;color:#4ade80;font-weight:700;}
+
+.money-hint{font-size:11.5px;color:#6b7280;margin-top:12px;line-height:1.7;}
+
+.type-toggle{display:flex;gap:8px;grid-column:1 / -1;flex-wrap:wrap;}
 .type-toggle label{
-  flex:1;text-align:center;padding:12px;border-radius:12px;border:1px solid #2c2c2c;
-  background:#0f0f0f;color:#9ca3af;cursor:pointer;font-size:14px;font-weight:600;transition:0.2s;
+  flex:1;min-width:120px;text-align:center;padding:12px 8px;border-radius:14px;border:1px solid #322640;
+  background:#15101c;color:#9ca3af;cursor:pointer;font-size:13px;font-weight:700;transition:0.2s;
 }
 .type-toggle input{display:none;}
-.type-toggle input:checked + span{display:inline-block;}
-.type-toggle label.income-label:has(input:checked){background:rgba(34,197,94,0.18);border-color:#22c55e;color:#4ade80;}
-.type-toggle label.expense-label:has(input:checked){background:rgba(248,113,113,0.18);border-color:#f87171;color:#f87171;}
+.type-toggle label.kind-deposit-label:has(input:checked){background:rgba(34,197,94,0.18);border-color:#22c55e;color:#4ade80;}
+.type-toggle label.kind-expense-label:has(input:checked){background:rgba(248,113,113,0.18);border-color:#f87171;color:#f87171;}
+.type-toggle label.kind-tatekae-label:has(input:checked){background:rgba(251,191,36,0.18);border-color:#fbbf24;color:#fbbf24;}
 
 .money-table{width:100%;border-collapse:collapse;}
-.money-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 10px;border-bottom:1px solid #2c2c2c;}
-.money-table td{padding:11px 10px;border-bottom:1px solid #1a1a1a;font-size:13px;vertical-align:middle;}
-.money-table tr:hover td{background:#111;}
-.money-amount{font-weight:800;font-size:15px;}
+.money-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 10px;border-bottom:1px solid #322640;}
+.money-table td{padding:11px 10px;border-bottom:1px solid #241a30;font-size:13px;vertical-align:middle;}
+.money-table tr:hover td{background:#241a30;}
+.money-amount{font-weight:800;font-size:15px;color:#e5e7eb;}
 .money-cat-pill{
-  display:inline-block;background:#0f0f0f;border:1px solid #2c2c2c;color:#9ca3af;
-  font-size:11px;padding:3px 10px;border-radius:20px;
+  display:inline-block;background:#15101c;border:1px solid #322640;color:#9ca3af;
+  font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:2px;
 }
-.money-who{font-size:11px;color:#6b7280;}
+.money-who{font-size:11px;color:#6b7280;font-weight:700;}
 .money-who.kaito{color:#f97316;}
 .money-who.nana{color:#a855f7;}
-.del-icon-btn{background:#dc2626;border:none;color:white;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1;}
+.del-icon-btn{background:#dc2626;border:none;color:white;width:26px;height:26px;border-radius:12px;cursor:pointer;font-size:12px;line-height:1;}
 .del-icon-btn:hover{background:#b91c1c;}
 
 /* ========================================
    SHOPS (お店リスト)
 ======================================== */
 .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
-.shop-card{background:#0f0f0f;border:1px solid #2c2c2c;border-radius:16px;padding:18px;transition:0.2s;position:relative;}
+.shop-card{background:#15101c;border:1px solid #322640;border-radius:16px;padding:18px;transition:0.2s;position:relative;}
 .shop-card:hover{border-color:#38bdf8;}
 .shop-name{font-size:15px;font-weight:700;color:#38bdf8;margin-bottom:6px;padding-right:60px;}
 .shop-cat{display:inline-block;background:rgba(56,189,248,0.12);color:#38bdf8;font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:8px;}
@@ -430,7 +466,7 @@ body{font-family:'Segoe UI',sans-serif;background:#0f0f0f;color:white;min-height
 .shop-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;}
 .shop-by{font-size:10px;color:#4b5563;}
 .shop-link{
-  display:inline-block;background:#38bdf8;color:#0f0f0f;font-weight:700;
-  padding:6px 12px;border-radius:8px;font-size:11px;text-decoration:none;
+  display:inline-block;background:#38bdf8;color:#15101c;font-weight:700;
+  padding:6px 12px;border-radius:12px;font-size:11px;text-decoration:none;
 }
 .shop-link:hover{background:#0ea5e9;}
