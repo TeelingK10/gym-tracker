@@ -152,11 +152,11 @@ function loginHTML() {
 //  HOME (WIKI TOP)
 // ============================================================
 function homeHTML() {
-  const kaitoW = state.workouts.filter(w=>w.user==='kaito');
-  const nanaW  = state.workouts.filter(w=>w.user==='nana');
-  const kaitoPR = getPR(kaitoW), nanaPR = getPR(nanaW);
+  const isK = state.user === 'kaito';
+  const myW = state.workouts.filter(w=>w.user===state.user);
+  const myPR = getPR(myW);
   const wallet = computeWallet(state.money);
-  const recent = [...state.workouts].sort((a,b)=>b.id-a.id).slice(0,5);
+  const recent = [...myW].sort((a,b)=>b.id-a.id).slice(0,5);
 
   return `
     <div class="wiki-hero">
@@ -165,19 +165,12 @@ function homeHTML() {
       <div class="wiki-hero-sub">ふたりの記録をひとつの場所に🎉</div>
     </div>
     <div class="feature-grid">
-      <button class="feature-card fc-gym-k" data-section="gym" data-gymuser="kaito">
+      <button class="feature-card ${isK?'fc-gym-k':'fc-gym-n'}" data-section="gym" data-gymuser="${state.user}">
         <div class="fc-bar"></div>
-        <span class="fc-icon">🏋️</span>
-        <div class="fc-title">かいとジム</div>
-        <div class="fc-sub">かいとの筋トレ記録</div>
-        <div class="fc-stat orange">${kaitoW.length}件 / ${Object.keys(kaitoPR).length}種目</div>
-      </button>
-      <button class="feature-card fc-gym-n" data-section="gym" data-gymuser="nana">
-        <div class="fc-bar"></div>
-        <span class="fc-icon">💪</span>
-        <div class="fc-title">ななジム</div>
-        <div class="fc-sub">ななの筋トレ記録</div>
-        <div class="fc-stat purple">${nanaW.length}件 / ${Object.keys(nanaPR).length}種目</div>
+        <span class="fc-icon">${isK?'🏋️':'💪'}</span>
+        <div class="fc-title">${isK?'かいとジム':'ななジム'}</div>
+        <div class="fc-sub">${isK?'かいと':'なな'}の筋トレ記録</div>
+        <div class="fc-stat ${isK?'orange':'purple'}">${myW.length}件 / ${Object.keys(myPR).length}種目</div>
       </button>
       <button class="feature-card fc-money" data-section="money">
         <div class="fc-bar"></div>
@@ -195,15 +188,14 @@ function homeHTML() {
       </button>
     </div>
     <div class="section">
-      <div class="section-title" style="color:#fbbf24;">🕐 最近の記録</div>
+      <div class="section-title" style="color:#fbbf24;">🕐 最近の記録（${isK?'かいと':'なな'}）</div>
       ${recent.length===0 ? '<p class="empty">まだ記録がありません。</p>' : `
       <table class="pr-table">
-        <thead><tr><th>誰</th><th>種目</th><th>重量</th><th>日付</th></tr></thead>
+        <thead><tr><th>種目</th><th>重量</th><th>日付</th></tr></thead>
         <tbody>
           ${recent.map(w=>`
-            <tr><td><span class="money-who ${w.user}">${w.user==='kaito'?'かいと':'なな'}</span></td>
-            <td>${escapeHtml(w.exercise)}</td>
-            <td class="prw ${w.user!=='kaito'?'purple':''}" style="font-size:16px;">${w.weight}kg</td>
+            <tr><td>${escapeHtml(w.exercise)}</td>
+            <td class="prw ${!isK?'purple':''}" style="font-size:16px;">${w.weight}kg</td>
             <td style="color:#6b7280;">${w.date||''}</td></tr>`).join('')}
         </tbody>
       </table>`}
@@ -608,11 +600,10 @@ function appHTML() {
   const ac  = isK ? 'orange' : 'purple';
 
   const navItems = [
-    ['home',  null,    '🏠 ホーム'],
-    ['gym',   'kaito', '🏋️ かいとジム'],
-    ['gym',   'nana',  '💪 ななジム'],
-    ['money', null,    '💰 財布'],
-    ['shops', null,    '📍 Shop'],
+    ['home',  null, '🏠 ホーム'],
+    ['gym',   u,    isK ? '🏋️ かいとジム' : '💪 ななジム'],
+    ['money', null, '💰 財布'],
+    ['shops', null, '📍 Shop'],
   ];
 
   const sidebar = `
@@ -624,8 +615,8 @@ function appHTML() {
         <div><div class="uname">${isK?'かいと':'なな'}</div><div style="font-size:10px;color:#4b5563;">Member</div></div>
       </div>
       ${navItems.map(([p,gu,l]) => {
-        const active = state.section===p && (p!=='gym' || state.gymUser===gu);
-        const activeColor = p==='gym' ? (gu==='kaito'?'orange':'purple') : (p==='money'?'green':p==='shops'?'blue':ac);
+        const active = state.section===p;
+        const activeColor = p==='gym' ? ac : (p==='money'?'green':p==='shops'?'blue':ac);
         return `<button class="nav-btn ${active?'active-'+activeColor:''}" data-section="${p}" ${gu?`data-gymuser="${gu}"`:''}>${l}</button>`;
       }).join('')}
       <button class="logout-btn" id="btn-logout">← ユーザー切替</button>
@@ -633,7 +624,7 @@ function appHTML() {
 
   let body = '';
   if (state.section==='home') body = homeHTML();
-  else if (state.section==='gym') body = gymHTML(state.gymUser || u);
+  else if (state.section==='gym') body = gymHTML(u); // 自分のジムだけ閲覧可能
   else if (state.section==='money') body = moneyHTML(u, isK, ac);
   else body = shopsHTML(u, isK, ac);
 
@@ -693,7 +684,7 @@ function bindEvents() {
   document.querySelectorAll('[data-section]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       state.section=btn.dataset.section;
-      if (btn.dataset.gymuser) { state.gymUser=btn.dataset.gymuser; state.gymPage='log'; }
+      if (state.section==='gym') { state.gymUser=state.user; state.gymPage='log'; }
       render();
     });
   });
