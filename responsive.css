@@ -1,0 +1,27 @@
+/* ========================================
+   MISC
+======================================== */
+.empty{color:#4b5563;font-style:italic;font-size:13px;padding:10px 0;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;}
+.overlay.open{display:block;}
+.hamburger{
+  display:none;position:fixed;top:12px;left:12px;z-index:300;
+  width:42px;height:42px;border-radius:12px;border:1px solid #d6eaf8;background:#ffffff;
+  cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 4px 12px rgba(56,189,248,0.15);
+}
+.hamburger span{display:block;width:20px;height:2px;background:#fb923c;border-radius:2px;}
+
+/* ========================================
+   MOBILE  ≤ 700px
+======================================== */
+@media(max-width:700px){
+  .hamburger{display:flex;}
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:none;}
+  .main{margin-left:0;width:100%;padding:16px;padding-top:64px;}
+  .cards-grid{grid-template-columns:1fr 1fr;}
+  .hero{padding:28px 22px;}
+  .hero h1{font-size:28px;}
+  .add-form{grid-template-columns:1fr;}
+  .workout-grid{grid-template-columns:1fr;}
+}

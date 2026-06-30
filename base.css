@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito','Segoe UI',sans-serif;background:#eaf4fc;color:#1e293b;min-height:100vh;}
+h1,h2,h3,.app-title,.hero h1,.wiki-hero h1,.fc-title,.stat-val,.cal-sum-val,.money-amount,.shop-name{font-family:'Baloo 2','Nunito',sans-serif;}
+button{font-family:inherit;}
+
+/* ========================================
+   LOGIN
+======================================== */
+.login-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:linear-gradient(160deg,#eaf6ff 0%,#f7fbff 50%,#eef2ff 100%);
+  position:relative;overflow:hidden;
+}
+.blob{
+  position:absolute;border-radius:50%;filter:blur(50px);opacity:0.55;
+  animation:blob-float 16s ease-in-out infinite;pointer-events:none;
+}
+.blob-orange{width:340px;height:340px;background:#fb923c;top:-80px;left:-60px;animation-duration:18s;}
+.blob-purple{width:380px;height:380px;background:#c084fc;bottom:-100px;right:-80px;animation-duration:22s;animation-delay:-4s;}
+.blob-blue{width:300px;height:300px;background:#7dd3fc;top:30%;right:-100px;animation-duration:20s;animation-delay:-9s;}
+.blob-pink{width:260px;height:260px;background:#f9a8d4;bottom:10%;left:-60px;animation-duration:24s;animation-delay:-14s;}
+@keyframes blob-float{
+  0%,100%{transform:translate(0,0) scale(1);}
+  25%{transform:translate(30px,-40px) scale(1.08);}
+  50%{transform:translate(-20px,30px) scale(0.95);}
+  75%{transform:translate(40px,20px) scale(1.05);}
+}
+@media (prefers-reduced-motion: reduce){
+  .blob{animation:none;}
+}
+.login-box{
+  width:100%;max-width:400px;background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);
+  border-radius:36px;padding:50px 40px;border:1px solid rgba(255,255,255,0.8);
+  box-shadow:0 20px 60px rgba(56,189,248,0.18);position:relative;z-index:1;
+}
+.app-title{font-size:52px;font-weight:800;letter-spacing:4px;text-align:center;margin-bottom:6px;
+  background:linear-gradient(90deg,#fb923c,#fbbf24,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.app-sub{text-align:center;color:#fbbf24;letter-spacing:4px;font-size:12px;margin-bottom:36px;font-weight:700;}
+.user-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.user-btn{
+  padding:22px;border:2px solid transparent;border-radius:24px;cursor:pointer;
+  font-size:15px;font-weight:800;letter-spacing:2px;transition:0.2s;text-align:center;background:none;
+}
+.user-btn.kaito{background:rgba(249,115,22,0.18);color:#fb923c;border-color:#fb923c;}
+.user-btn.kaito:hover{background:#fdba74;color:white;transform:translateY(-3px) scale(1.03);box-shadow:0 8px 18px rgba(251,146,60,0.3);}
+.user-btn.nana{background:rgba(168,85,247,0.18);color:#c084fc;border-color:#c084fc;}
+.user-btn.nana:hover{background:#d8b4fe;color:white;transform:translateY(-3px) scale(1.03);box-shadow:0 8px 18px rgba(192,132,252,0.3);}
+.user-avatar{font-size:38px;margin-bottom:8px;}
+.login-hint{text-align:center;color:#64748b;font-size:12px;letter-spacing:1px;}
+.status-badge{border-radius:16px;padding:12px 16px;margin-bottom:20px;font-size:12px;line-height:1.6;font-weight:600;}
+.status-badge.demo{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);color:#fb923c;}
+.status-badge.connected{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.35);color:#4ade80;}

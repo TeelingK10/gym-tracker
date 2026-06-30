@@ -1,0 +1,37 @@
+/* ========================================
+   HOME / WIKI TOP
+======================================== */
+.wiki-hero{
+  border-radius:30px;padding:48px 44px;margin-bottom:24px;
+  background:linear-gradient(135deg,#fdf2f8 0%,#fff7ed 50%,#f5f3ff 100%);
+  border:1px solid rgba(56,189,248,0.15);position:relative;overflow:hidden;
+}
+.wiki-hero::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 12% 18%,rgba(251,146,60,0.16),transparent 42%),
+             radial-gradient(circle at 88% 82%,rgba(192,132,252,0.16),transparent 42%),
+             radial-gradient(circle at 50% 50%,rgba(251,191,36,0.06),transparent 60%);
+  pointer-events:none;
+}
+.wiki-hero-tag{font-size:12px;letter-spacing:5px;color:#d97706;margin-bottom:10px;position:relative;font-weight:800;}
+.wiki-hero h1{font-size:42px;font-weight:800;margin-bottom:8px;position:relative;
+  background:linear-gradient(90deg,#ea580c,#d97706,#9333ea);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.wiki-hero-sub{color:#64748b;font-size:14px;position:relative;font-weight:600;}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+.feature-card{
+  background:#ffffff;border:1px solid #d6eaf8;border-radius:26px;padding:26px;cursor:pointer;
+  transition:0.2s cubic-bezier(.34,1.56,.64,1);text-align:left;position:relative;overflow:hidden;
+}
+.feature-card:hover{transform:translateY(-5px) scale(1.02);border-color:#38bdf8;box-shadow:0 14px 32px rgba(56,189,248,0.18);}
+.feature-card .fc-icon{font-size:34px;margin-bottom:14px;display:block;}
+.feature-card .fc-title{font-size:17px;font-weight:800;letter-spacing:1px;margin-bottom:6px;}
+.feature-card .fc-sub{color:#5b7a99;font-size:12px;line-height:1.6;font-weight:600;}
+.feature-card .fc-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:0 0 8px 8px;}
+.feature-card.fc-gym-k .fc-bar{background:linear-gradient(90deg,#fb923c,#fbbf24);}
+.feature-card.fc-gym-n .fc-bar{background:linear-gradient(90deg,#c084fc,#f0abfc);}
+.feature-card.fc-money .fc-bar{background:linear-gradient(90deg,#4ade80,#86efac);}
+.feature-card.fc-shops .fc-bar{background:linear-gradient(90deg,#38bdf8,#7dd3fc);}
+.feature-card .fc-stat{font-size:22px;font-weight:800;margin-top:12px;}
+.feature-card.fc-money .fc-stat{color:#16a34a;}
+.feature-card.fc-shops .fc-stat{color:#38bdf8;}

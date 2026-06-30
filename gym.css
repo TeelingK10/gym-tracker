@@ -1,0 +1,185 @@
+/* ========================================
+   WORKOUT CARDS
+======================================== */
+.workout-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.workout-card{background:#ffffff;border:1px solid #d6eaf8;border-radius:20px;padding:18px;transition:0.2s;position:relative;box-shadow:0 2px 10px rgba(56,189,248,0.06);}
+.workout-card:hover{border-color:#fb923c;transform:translateY(-2px);}
+.workout-card.np:hover{border-color:#c084fc;}
+.wc-name{color:#fb923c;font-size:14px;margin-bottom:12px;font-weight:800;}
+.wc-name.purple{color:#c084fc;}
+.workout-stats{display:flex;justify-content:space-between;}
+.workout-stats>div span{color:#5b7a99;font-size:11px;letter-spacing:1px;display:block;font-weight:700;}
+.workout-stats>div strong{font-size:20px;}
+.workout-date{color:#94a3b8;font-size:11px;margin-top:10px;}
+.pr-badge{position:absolute;top:12px;right:12px;background:#ffedd5;color:#c2410c;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:800;}
+.pr-badge.pp{background:#f3e8ff;color:#9333ea;}
+.del-btn{margin-top:12px;background:#f87171;border:none;color:white;padding:6px 12px;border-radius:14px;font-size:11px;cursor:pointer;font-weight:700;transition:0.2s;}
+.del-btn:hover{background:#ef4444;transform:scale(1.05);}
+
+/* ========================================
+   PR TABLE
+======================================== */
+.pr-table{width:100%;border-collapse:collapse;}
+.pr-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 12px;border-bottom:1px solid #d6eaf8;}
+.pr-table td{padding:12px;border-bottom:1px solid #eaf6ff;font-size:14px;}
+.pr-table td.prw{font-size:22px;font-weight:800;color:#fb923c;}
+.pr-table td.prw.purple{color:#c084fc;}
+.pr-table tr:hover td{background:#eaf6ff;}
+
+/* ========================================
+   WEEKLY MENU
+======================================== */
+.day-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.day-tab{padding:7px 16px;border-radius:14px;border:1px solid #d6eaf8;background:#eef7fd;color:#5b7a99;cursor:pointer;font-size:12px;font-weight:700;transition:0.2s;}
+.day-tab:hover{transform:translateY(-1px);}
+.day-tab.ao{background:#fb923c;color:white;border-color:#fb923c;}
+.day-tab.ap{background:#c084fc;color:white;border-color:#c084fc;}
+.menu-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.menu-row{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;
+  background:#ffffff;border:1px solid #d6eaf8;border-radius:14px;padding:10px 14px;gap:8px;
+}
+.menu-ex{font-size:13px;color:#fb923c;}
+.menu-ex.purple{color:#c084fc;}
+.menu-meta{color:#6b7280;font-size:12px;}
+.menu-row-left{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;}
+.menu-row-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.video-btn{
+  display:inline-block;background:#f87171;color:white;
+  padding:6px 12px;border-radius:12px;font-size:12px;
+  text-decoration:none;transition:0.2s;white-space:nowrap;
+}
+.video-btn:hover{background:#ef4444;transform:scale(1.05);}
+.video-btn.purple-video{background:#c084fc;}
+.video-btn.purple-video:hover{background:#a855f7;}
+
+@media(max-width:700px){
+  .menu-row{flex-wrap:wrap;}
+  .menu-row-right{width:100%;justify-content:flex-end;}
+}
+
+/* ========================================
+   グラフ — 種目セレクター
+======================================== */
+.ex-select-wrap{
+  display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;
+}
+.ex-sel-btn{
+  padding:5px 12px;border-radius:14px;border:1px solid #d6eaf8;
+  background:#eef7fd;color:#5b7a99;cursor:pointer;font-size:12px;transition:0.2s;
+}
+.ex-sel-btn.active-o{background:#fb923c;color:white;border-color:#fb923c;}
+.ex-sel-btn.active-p{background:#c084fc;color:white;border-color:#c084fc;}
+
+/* ========================================
+   Weekly Menu — ワンタップ記録ボタン
+======================================== */
+.quick-add-btn{
+  padding:6px 12px;border-radius:12px;border:none;
+  background:#fb923c;color:white;font-size:12px;
+  cursor:pointer;transition:0.2s;white-space:nowrap;font-weight:600;
+}
+.quick-add-btn:hover{background:#ea580c;transform:scale(1.05);}
+.quick-add-btn.purple-quick{background:#c084fc;}
+.quick-add-btn.purple-quick:hover{background:#a855f7;}
+.quick-add-btn:disabled{background:#94a3b8;cursor:default;}
+
+/* ========================================
+   CALENDAR
+======================================== */
+.cal-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.cal-nav-btn{
+  background:#38bdf8;border:none;color:white;padding:8px 14px;
+  border-radius:14px;cursor:pointer;font-size:14px;transition:0.2s;
+}
+.cal-nav-btn:hover{background:#0ea5e9;transform:scale(1.08);}
+.cal-month-label{font-size:16px;font-weight:700;letter-spacing:2px;}
+
+.cal-header{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  margin-bottom:6px;
+}
+.cal-head-cell{
+  text-align:center;font-size:11px;letter-spacing:1px;
+  color:#6b7280;padding:6px 0;
+}
+.cal-head-cell.cal-sun{color:#ef4444;}
+.cal-head-cell.cal-sat{color:#60a5fa;}
+
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:4px;margin-bottom:20px;
+}
+.cal-cell{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;border-radius:14px;font-size:13px;cursor:pointer;
+  position:relative;border:1px solid transparent;transition:0.2s;color:#5b7a99;
+}
+.cal-cell:hover{background:#bfe6fb;color:#0c4a6e;}
+.cal-cell.empty{cursor:default;}
+.cal-cell.empty:hover{background:transparent;}
+.cal-cell.cal-today{border-color:#38bdf8;color:#0c4a6e;font-weight:700;}
+.cal-cell.cal-sel{border-color:#fb923c;background:rgba(249,115,22,0.1);}
+.cal-cell.trained-o{background:rgba(249,115,22,0.2);color:#fb923c;font-weight:700;}
+.cal-cell.trained-p{background:rgba(168,85,247,0.2);color:#c084fc;font-weight:700;}
+.cal-cell.cal-sun{color:#ef4444;}
+.cal-cell.cal-sat{color:#60a5fa;}
+.cal-cell.trained-o.cal-sun,
+.cal-cell.trained-o.cal-sat,
+.cal-cell.trained-p.cal-sun,
+.cal-cell.trained-p.cal-sat{color:inherit;}
+
+.cal-dot{
+  position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:currentColor;
+}
+
+/* カレンダー サマリー */
+.cal-summary{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-bottom:20px;
+}
+.cal-sum-item{
+  background:#eef7fd;border:1px solid #d6eaf8;border-radius:14px;
+  padding:14px;text-align:center;
+}
+.cal-sum-label{font-size:10px;letter-spacing:2px;color:#6b7280;margin-bottom:6px;}
+.cal-sum-val{font-size:22px;font-weight:800;}
+
+/* カレンダー 詳細 */
+.cal-detail{
+  background:#eef7fd;border:1px solid #d6eaf8;border-radius:14px;padding:16px;
+}
+.cal-detail-date{
+  font-size:12px;letter-spacing:2px;color:#6b7280;margin-bottom:12px;
+}
+.cal-workout-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid #eaf6ff;gap:8px;flex-wrap:wrap;
+}
+.cal-workout-row:last-child{border-bottom:none;}
+.purple-text{color:#c084fc;}
+
+@media(max-width:700px){
+  .cal-summary{grid-template-columns:repeat(3,1fr);}
+  .cal-cell{font-size:11px;border-radius:12px;}
+  .cal-sum-val{font-size:18px;}
+}
+
+/* ========================================
+   ジムサブナビ（Log / Calendar / Records / Menu）
+======================================== */
+.subnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.subnav-btn{
+  padding:10px 18px;border-radius:16px;border:1px solid #d6eaf8;background:#ffffff;
+  color:#5b7a99;font-size:13px;cursor:pointer;transition:0.2s;font-weight:700;
+}
+.subnav-btn:hover{background:#e0f2fe;color:#0c4a6e;}
+.subnav-btn.active{color:#0c4a6e;}
+.subnav-btn.active.acc-orange{background:rgba(249,115,22,0.22);border-color:#fb923c;color:#fb923c;}
+.subnav-btn.active.acc-purple{background:rgba(168,85,247,0.22);border-color:#c084fc;color:#c084fc;}
+.subnav-btn.active.acc-green{background:rgba(34,197,94,0.22);border-color:#4ade80;color:#4ade80;}
+.subnav-btn.active.acc-blue{background:rgba(56,189,248,0.22);border-color:#38bdf8;color:#38bdf8;}

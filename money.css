@@ -1,0 +1,52 @@
+/* ========================================
+   MONEY (共有の財布)
+======================================== */
+.money-stat-income{color:#16a34a !important;}
+.money-stat-expense{color:#ef4444 !important;}
+.money-stat-balance{color:#0ea5e9 !important;}
+
+.wallet-balance-card{
+  background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);
+  border:1px solid rgba(74,222,128,0.4);border-radius:26px;
+  padding:30px 34px;margin-bottom:20px;text-align:center;
+  box-shadow:0 10px 28px rgba(74,222,128,0.10);
+}
+.wallet-balance-label{font-size:12px;letter-spacing:3px;color:#15803d;font-weight:800;margin-bottom:8px;}
+.wallet-balance-val{font-size:44px;font-weight:800;color:#16a34a;font-family:'Baloo 2',sans-serif;}
+
+.settle-card{
+  background:#ffffff;border:1px solid #fb923c;border-radius:22px;
+  padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+}
+.settle-card.settle-zero{border-color:#4ade80;background:#f0fdf4;}
+.settle-text{font-size:14px;color:#334155;font-weight:600;}
+.settle-text strong{font-size:18px;color:#fbbf24;}
+.settle-zero-text{font-size:14px;color:#16a34a;font-weight:700;}
+
+.money-hint{font-size:11.5px;color:#6b7280;margin-top:12px;line-height:1.7;}
+
+.type-toggle{display:flex;gap:8px;grid-column:1 / -1;flex-wrap:wrap;}
+.type-toggle label{
+  flex:1;min-width:120px;text-align:center;padding:12px 8px;border-radius:14px;border:1px solid #d6eaf8;
+  background:#eef7fd;color:#5b7a99;cursor:pointer;font-size:13px;font-weight:700;transition:0.2s;
+}
+.type-toggle input{display:none;}
+.type-toggle label.kind-deposit-label:has(input:checked){background:rgba(34,197,94,0.18);border-color:#4ade80;color:#4ade80;}
+.type-toggle label.kind-expense-label:has(input:checked){background:rgba(248,113,113,0.18);border-color:#f87171;color:#f87171;}
+.type-toggle label.kind-tatekae-label:has(input:checked){background:rgba(251,191,36,0.18);border-color:#fbbf24;color:#fbbf24;}
+
+.money-table{width:100%;border-collapse:collapse;}
+.money-table th{text-align:left;color:#6b7280;font-size:11px;letter-spacing:2px;padding:8px 10px;border-bottom:1px solid #d6eaf8;}
+.money-table td{padding:11px 10px;border-bottom:1px solid #eaf6ff;font-size:13px;vertical-align:middle;}
+.money-table tr:hover td{background:#eaf6ff;}
+.money-amount{font-weight:800;font-size:15px;color:#1e293b;}
+.money-cat-pill{
+  display:inline-block;background:#eef7fd;border:1px solid #d6eaf8;color:#5b7a99;
+  font-size:11px;padding:3px 10px;border-radius:20px;margin-bottom:2px;
+}
+.money-who{font-size:11px;color:#6b7280;font-weight:700;}
+.money-who.kaito{color:#fb923c;}
+.money-who.nana{color:#c084fc;}
+.del-icon-btn{background:#f87171;border:none;color:white;width:26px;height:26px;border-radius:12px;cursor:pointer;font-size:12px;line-height:1;}
+.del-icon-btn:hover{background:#ef4444;}
