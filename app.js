@@ -135,6 +135,10 @@ function escapeHtml(s) {
 function loginHTML() {
   return `
     <div class="login-screen">
+      <div class="blob blob-orange"></div>
+      <div class="blob blob-purple"></div>
+      <div class="blob blob-blue"></div>
+      <div class="blob blob-pink"></div>
       <div class="login-box">
         <div class="app-title">WIKI</div>
         <div class="app-sub">OUR LIFE TOGETHER</div>
