@@ -8,9 +8,10 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbyQkv4WQXsrVHVHwA_p2p7_
 const state = {
   user:        null,
   section:     'home',   // home | gym | money | shops
+  gymUser:     null,     // kaito | nana — どちらのジムを見ているか
   gymPage:     'log',    // log | calendar | pr | menu
-  workouts:    [],
-  menus:       [],
+  workouts:    [],       // 全員分（共有）
+  menus:       [],       // 全員分（共有）
   money:       [],
   shops:       [],
   activeDay:   todayIndex(),
@@ -23,8 +24,7 @@ const state = {
 
 const DAY_NAMES   = ['月','火','水','木','金','土','日'];
 const MONTH_NAMES = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-const MONEY_CATS_EXPENSE = ['食費','デート','交通','日用品','娯楽','住居','その他'];
-const MONEY_CATS_INCOME  = ['給料','お小遣い','その他'];
+const WALLET_CATS = ['食費','デート','日用品','娯楽','住居','交通','旅行','その他'];
 const SHOP_CATS = ['ごはん','カフェ','デート','旅行','買い物','その他'];
 
 function todayIndex() {
@@ -46,8 +46,8 @@ async function gasPost(params) {
   return res.json();
 }
 
-async function loadWorkouts(user) {
-  const res = await gasGet({ action: 'getWorkouts', user });
+async function loadWorkouts() {
+  const res = await gasGet({ action: 'getWorkouts' });
   if (!res.ok) return state.workouts;
   return res.rows.map(r => ({
     id: String(r.id), user: r.user, exercise: r.exercise,
@@ -58,8 +58,8 @@ async function loadWorkouts(user) {
 async function saveWorkout(user, data) { await gasPost({ action: 'addWorkout', data: JSON.stringify({ user, ...data }) }); }
 async function removeWorkout(id) { await gasPost({ action: 'deleteWorkout', id }); }
 
-async function loadMenus(user) {
-  const res = await gasGet({ action: 'getMenus', user });
+async function loadMenus() {
+  const res = await gasGet({ action: 'getMenus' });
   if (!res.ok) return state.menus;
   return res.rows.map(r => ({
     id: String(r.id), user: r.user, day: parseInt(r.day),
@@ -75,8 +75,9 @@ async function loadMoney() {
   const res = await gasGet({ action: 'getMoney' });
   if (!res.ok) return state.money;
   return res.rows.map(r => ({
-    id: String(r.id), user: r.user, type: r.type, category: r.category,
+    id: String(r.id), user: r.user, kind: r.kind, category: r.category,
     amount: parseFloat(r.amount) || 0, memo: r.memo || '', date: r.date,
+    payee: r.payee || '',
   })).sort((a,b) => (b.date||'').localeCompare(a.date||'') || b.id - a.id);
 }
 async function saveMoney(user, data) { await gasPost({ action: 'addMoney', data: JSON.stringify({ user, ...data }) }); }
@@ -94,9 +95,9 @@ async function loadShops() {
 async function saveShop(user, data) { await gasPost({ action: 'addShop', data: JSON.stringify({ user, ...data }) }); }
 async function removeShop(id) { await gasPost({ action: 'deleteShop', id }); }
 
-async function loadAll(user) {
+async function loadAll() {
   const [workouts, menus, money, shops] = await Promise.all([
-    loadWorkouts(user), loadMenus(user), loadMoney(), loadShops(),
+    loadWorkouts(), loadMenus(), loadMoney(), loadShops(),
   ]);
   state.workouts = workouts; state.menus = menus; state.money = money; state.shops = shops;
 }
@@ -109,8 +110,8 @@ function getPR(workouts) {
   workouts.forEach(w => { if (w.weight && (!map[w.exercise] || w.weight > map[w.exercise])) map[w.exercise] = w.weight; });
   return map;
 }
-function getLastRecord(exercise) {
-  const records = state.workouts.filter(w => w.exercise === exercise);
+function getLastRecord(exercise, workouts) {
+  const records = workouts.filter(w => w.exercise === exercise);
   return records.length > 0 ? records[0] : null;
 }
 function numInput(name, placeholder, value='', step=1, isK=true) {
@@ -150,51 +151,59 @@ function loginHTML() {
 // ============================================================
 //  HOME (WIKI TOP)
 // ============================================================
-function homeHTML(isK, ac) {
-  const pr = getPR(state.workouts);
-  const thisMonth = new Date().toISOString().slice(0,7);
-  const monthMoney = state.money.filter(m => (m.date||'').startsWith(thisMonth));
-  const income  = monthMoney.filter(m=>m.type==='income').reduce((s,m)=>s+m.amount,0);
-  const expense = monthMoney.filter(m=>m.type==='expense').reduce((s,m)=>s+m.amount,0);
+function homeHTML() {
+  const kaitoW = state.workouts.filter(w=>w.user==='kaito');
+  const nanaW  = state.workouts.filter(w=>w.user==='nana');
+  const kaitoPR = getPR(kaitoW), nanaPR = getPR(nanaW);
+  const wallet = computeWallet(state.money);
+  const recent = [...state.workouts].sort((a,b)=>b.id-a.id).slice(0,5);
 
   return `
     <div class="wiki-hero">
-      <div class="wiki-hero-tag">FOR US, BY US</div>
+      <div class="wiki-hero-tag">✨ FOR US, BY US ✨</div>
       <h1>かいと & なな WIKI</h1>
-      <div class="wiki-hero-sub">ふたりの記録をひとつの場所に。</div>
+      <div class="wiki-hero-sub">ふたりの記録をひとつの場所に🎉</div>
     </div>
     <div class="feature-grid">
-      <button class="feature-card fc-gym" data-goto="gym">
+      <button class="feature-card fc-gym-k" data-section="gym" data-gymuser="kaito">
         <div class="fc-bar"></div>
         <span class="fc-icon">🏋️</span>
-        <div class="fc-title">GYM TRACKER</div>
-        <div class="fc-sub">筋トレ記録・週間メニュー・PR管理</div>
-        <div class="fc-stat ${ac}">${state.workouts.length}件 / ${Object.keys(pr).length}種目</div>
+        <div class="fc-title">かいとジム</div>
+        <div class="fc-sub">かいとの筋トレ記録</div>
+        <div class="fc-stat orange">${kaitoW.length}件 / ${Object.keys(kaitoPR).length}種目</div>
       </button>
-      <button class="feature-card fc-money" data-goto="money">
+      <button class="feature-card fc-gym-n" data-section="gym" data-gymuser="nana">
+        <div class="fc-bar"></div>
+        <span class="fc-icon">💪</span>
+        <div class="fc-title">ななジム</div>
+        <div class="fc-sub">ななの筋トレ記録</div>
+        <div class="fc-stat purple">${nanaW.length}件 / ${Object.keys(nanaPR).length}種目</div>
+      </button>
+      <button class="feature-card fc-money" data-section="money">
         <div class="fc-bar"></div>
         <span class="fc-icon">💰</span>
-        <div class="fc-title">MONEY</div>
-        <div class="fc-sub">ふたりの家計簿。収支を共有管理</div>
-        <div class="fc-stat">¥${yen(income-expense)} <span style="font-size:12px;color:#6b7280;">今月収支</span></div>
+        <div class="fc-title">共有の財布</div>
+        <div class="fc-sub">財布残高＋立て替え精算</div>
+        <div class="fc-stat">¥${yen(wallet.balance)} <span style="font-size:12px;color:#6b7280;">残高</span></div>
       </button>
-      <button class="feature-card fc-shops" data-goto="shops">
+      <button class="feature-card fc-shops" data-section="shops">
         <div class="fc-bar"></div>
         <span class="fc-icon">📍</span>
-        <div class="fc-title">SHOPS</div>
-        <div class="fc-sub">行きたい・行ったお店を記録</div>
+        <div class="fc-title">Shop</div>
+        <div class="fc-sub">行きたい・行ったお店リスト</div>
         <div class="fc-stat">${state.shops.length}件 登録済み</div>
       </button>
     </div>
     <div class="section">
-      <div class="section-title ${ac}">🕐 最近の記録</div>
-      ${state.workouts.length===0 ? '<p class="empty">まだ記録がありません。</p>' : `
+      <div class="section-title" style="color:#fbbf24;">🕐 最近の記録</div>
+      ${recent.length===0 ? '<p class="empty">まだ記録がありません。</p>' : `
       <table class="pr-table">
-        <thead><tr><th>種目</th><th>重量</th><th>日付</th></tr></thead>
+        <thead><tr><th>誰</th><th>種目</th><th>重量</th><th>日付</th></tr></thead>
         <tbody>
-          ${state.workouts.slice(0,5).map(w=>`
-            <tr><td>${escapeHtml(w.exercise)}</td>
-            <td class="prw ${!isK?'purple':''}" style="font-size:16px;">${w.weight}kg</td>
+          ${recent.map(w=>`
+            <tr><td><span class="money-who ${w.user}">${w.user==='kaito'?'かいと':'なな'}</span></td>
+            <td>${escapeHtml(w.exercise)}</td>
+            <td class="prw ${w.user!=='kaito'?'purple':''}" style="font-size:16px;">${w.weight}kg</td>
             <td style="color:#6b7280;">${w.date||''}</td></tr>`).join('')}
         </tbody>
       </table>`}
@@ -202,12 +211,12 @@ function homeHTML(isK, ac) {
 }
 
 // ============================================================
-//  GYM SECTION
+//  GYM SECTION（gw=対象ユーザーのworkouts, gm=対象ユーザーのmenus）
 // ============================================================
-function calendarHTML(isK, ac) {
+function calendarHTML(isK, ac, gw) {
   const year = state.calYear, month = state.calMonth;
   const today = new Date().toISOString().slice(0,10);
-  const trainedDates = new Set(state.workouts.map(w => w.date));
+  const trainedDates = new Set(gw.map(w => w.date));
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startOffset = (firstDay + 6) % 7;
@@ -228,7 +237,7 @@ function calendarHTML(isK, ac) {
 
   let detail = '';
   if (state.calSelected) {
-    const dayWorkouts = state.workouts.filter(w => w.date === state.calSelected);
+    const dayWorkouts = gw.filter(w => w.date === state.calSelected);
     detail = `
       <div class="cal-detail">
         <div class="cal-detail-date">${state.calSelected}</div>
@@ -241,7 +250,7 @@ function calendarHTML(isK, ac) {
   }
 
   const monthStr = `${year}-${String(month+1).padStart(2,'0')}`;
-  const monthWorkouts = state.workouts.filter(w => w.date && w.date.startsWith(monthStr));
+  const monthWorkouts = gw.filter(w => w.date && w.date.startsWith(monthStr));
   const monthDays = new Set(monthWorkouts.map(w => w.date)).size;
 
   return `
@@ -274,16 +283,17 @@ function getStreak(trainedDates, today) {
   return streak;
 }
 
-function gymLogHTML(isK, ac, pr, today) {
-  const todayCnt = state.workouts.filter(w => w.date === today).length;
-  const vol = state.workouts.reduce((s,w) => s+(w.weight||0)*(w.reps||0)*(w.sets||0), 0);
+function gymLogHTML(isK, ac, pr, today, gw, canEdit) {
+  const todayCnt = gw.filter(w => w.date === today).length;
+  const vol = gw.reduce((s,w) => s+(w.weight||0)*(w.reps||0)*(w.sets||0), 0);
   return `
     <div class="cards-grid">
-      <div class="stat-card"><div class="stat-label">TOTAL</div><div class="stat-val ${ac}">${state.workouts.length}</div></div>
+      <div class="stat-card"><div class="stat-label">TOTAL</div><div class="stat-val ${ac}">${gw.length}</div></div>
       <div class="stat-card"><div class="stat-label">TODAY</div><div class="stat-val ${ac}">${todayCnt}</div></div>
       <div class="stat-card"><div class="stat-label">VOLUME</div><div class="stat-val ${ac}">${(vol/1000).toFixed(1)}<span style="font-size:16px;color:#6b7280;"> t</span></div></div>
       <div class="stat-card"><div class="stat-label">EXERCISES</div><div class="stat-val ${ac}">${Object.keys(pr).length}</div></div>
     </div>
+    ${canEdit ? `
     <div class="section">
       <div class="section-title ${ac}">➕ ADD WORKOUT</div>
       <form class="add-form" id="form-workout">
@@ -294,12 +304,12 @@ function gymLogHTML(isK, ac, pr, today) {
         <input name="date" type="date" value="${today}" required class="${!isK?'pf':''}">
         <button type="submit" class="submit-btn ${ac}">+ 追加</button>
       </form>
-    </div>
+    </div>` : `<div class="status-badge demo">👀 これは${isK?'かいと':'なな'}の記録です（閲覧のみ）</div>`}
     <div class="section">
       <div class="section-title ${ac}">📝 WORKOUT LOG</div>
-      ${state.workouts.length===0?'<p class="empty">まだ記録がありません。</p>':''}
+      ${gw.length===0?'<p class="empty">まだ記録がありません。</p>':''}
       <div class="workout-grid">
-        ${state.workouts.map(w=>`
+        ${gw.map(w=>`
           <div class="workout-card ${!isK?'np':''}">
             <div class="wc-name ${!isK?'purple':''}">${escapeHtml(w.exercise)}</div>
             <div class="workout-stats">
@@ -309,18 +319,18 @@ function gymLogHTML(isK, ac, pr, today) {
             </div>
             <div class="workout-date">${w.date||''}</div>
             ${pr[w.exercise]===w.weight?`<div class="pr-badge ${!isK?'pp':''}">🏆 PR</div>`:''}
-            <button class="del-btn" data-del-workout="${w.id}">削除</button>
+            ${canEdit?`<button class="del-btn" data-del-workout="${w.id}">削除</button>`:''}
           </div>`).join('')}
       </div>
     </div>`;
 }
 
-function gymPrHTML(isK, ac, pr) {
+function gymPrHTML(isK, ac, pr, gw) {
   const sorted = Object.entries(pr).sort((a,b)=>a[0].localeCompare(b[0],'ja'));
   const selEx  = state.selectedEx || (sorted.length>0?sorted[0][0]:null);
   let graphHTML = '';
   if (selEx) {
-    const records = state.workouts.filter(w=>w.exercise===selEx&&w.date).sort((a,b)=>a.date.localeCompare(b.date));
+    const records = gw.filter(w=>w.exercise===selEx&&w.date).sort((a,b)=>a.date.localeCompare(b.date));
     graphHTML = `
       <div class="section" style="margin-bottom:20px;">
         <div class="section-title ${ac}">📈 PROGRESS GRAPH</div>
@@ -344,15 +354,15 @@ function gymPrHTML(isK, ac, pr) {
           ${sorted.map(([ex,best])=>`
             <tr><td>${escapeHtml(ex)}</td>
             <td class="prw ${!isK?'purple':''}">${best}<span style="font-size:13px;color:#6b7280;"> kg</span></td>
-            <td style="color:#6b7280;font-size:14px;">${state.workouts.filter(w=>w.exercise===ex).length}回</td></tr>`).join('')}
+            <td style="color:#6b7280;font-size:14px;">${gw.filter(w=>w.exercise===ex).length}回</td></tr>`).join('')}
         </tbody>
       </table>`}
     </div>`;
 }
 
-function gymMenuHTML(isK, ac) {
+function gymMenuHTML(isK, ac, gm, gw, canEdit) {
   const ad = state.activeDay;
-  const dayMenus = state.menus.filter(m=>m.day===ad);
+  const dayMenus = gm.filter(m=>m.day===ad);
   return `
     <div class="section">
       <div class="section-title ${ac}">⚙️ WEEKLY MENU</div>
@@ -362,7 +372,7 @@ function gymMenuHTML(isK, ac) {
       <div class="menu-list">
         ${dayMenus.length===0?'<p class="empty">この曜日のメニューはありません</p>':''}
         ${dayMenus.map(m=>{
-          const last=getLastRecord(m.exercise);
+          const last=getLastRecord(m.exercise, gw);
           return `
           <div class="menu-row">
             <div class="menu-row-left">
@@ -370,18 +380,29 @@ function gymMenuHTML(isK, ac) {
               <span class="menu-meta">${m.target_sets}sets × ${m.target_reps}reps</span>
               ${last?`<span class="menu-meta">前回: ${last.weight}kg × ${last.reps}reps</span>`:''}
             </div>
+            ${canEdit ? `
             <div class="menu-row-right">
               ${m.video_url?`<a href="${m.video_url}" target="_blank" class="video-btn ${!isK?'purple-video':''}">▶ 動画</a>`:''}
+              <div class="num-input-wrap quick-weight-wrap" style="width:120px;">
+                <button type="button" class="num-btn minus" data-qw-target="qw-${m.id}">−</button>
+                <input id="qw-${m.id}" type="number" inputmode="decimal" step="0.5"
+                  value="${last?last.weight:''}" placeholder="kg" style="background:#0f0f0f;color:white;border:none;border-left:1px solid #2c2c2c;border-right:1px solid #2c2c2c;text-align:center;padding:12px 4px;font-size:14px;">
+                <button type="button" class="num-btn plus" data-qw-target="qw-${m.id}">＋</button>
+              </div>
               <button class="quick-add-btn ${!isK?'purple-quick':''}"
                 data-exercise="${escapeHtml(m.exercise)}"
-                data-weight="${last?last.weight:''}"
+                data-weight-input="qw-${m.id}"
                 data-reps="${last?last.reps:m.target_reps}"
                 data-sets="${last?last.sets:m.target_sets}">+ 記録</button>
               <button class="del-btn" data-del-menu="${m.id}">削除</button>
-            </div>
+            </div>` : `
+            <div class="menu-row-right">
+              ${m.video_url?`<a href="${m.video_url}" target="_blank" class="video-btn ${!isK?'purple-video':''}">▶ 動画</a>`:''}
+            </div>`}
           </div>`;
         }).join('')}
       </div>
+      ${canEdit ? `
       <form class="add-form" id="form-menu">
         <input type="hidden" name="day" value="${ad}">
         <input name="exercise" placeholder="種目名" required class="${!isK?'pf':''}">
@@ -389,12 +410,17 @@ function gymMenuHTML(isK, ac) {
         ${numInput('target_reps','Reps','',1,isK)}
         <input name="video_url" type="url" inputmode="url" placeholder="動画URL（任意）" class="${!isK?'pf':''}">
         <button type="submit" class="submit-btn ${ac}">+ 追加</button>
-      </form>
+      </form>` : ''}
     </div>`;
 }
 
-function gymHTML(u, isK, ac) {
-  const pr = getPR(state.workouts);
+function gymHTML(gymUser) {
+  const isK = gymUser === 'kaito';
+  const ac  = isK ? 'orange' : 'purple';
+  const canEdit = state.user === gymUser;
+  const gw = state.workouts.filter(w=>w.user===gymUser);
+  const gm = state.menus.filter(m=>m.user===gymUser);
+  const pr = getPR(gw);
   const today = new Date().toISOString().slice(0,10);
   const tabs = [['log','📝 Log'],['calendar','📅 Calendar'],['pr','🏆 Records'],['menu','⚙️ Menu']];
   const subnav = `
@@ -402,80 +428,119 @@ function gymHTML(u, isK, ac) {
       ${tabs.map(([p,l])=>`<button class="subnav-btn ${state.gymPage===p?'active '+(isK?'acc-orange':'acc-purple'):''}" data-gympage="${p}">${l}</button>`).join('')}
     </div>`;
   let pageHTML = '';
-  if (state.gymPage==='log') pageHTML = gymLogHTML(isK, ac, pr, today);
-  else if (state.gymPage==='calendar') pageHTML = calendarHTML(isK, ac);
-  else if (state.gymPage==='pr') pageHTML = gymPrHTML(isK, ac, pr);
-  else pageHTML = gymMenuHTML(isK, ac);
+  if (state.gymPage==='log') pageHTML = gymLogHTML(isK, ac, pr, today, gw, canEdit);
+  else if (state.gymPage==='calendar') pageHTML = calendarHTML(isK, ac, gw);
+  else if (state.gymPage==='pr') pageHTML = gymPrHTML(isK, ac, pr, gw);
+  else pageHTML = gymMenuHTML(isK, ac, gm, gw, canEdit);
 
   return `
-    <div class="hero ${u}">
+    <div class="hero ${gymUser}">
       <div class="hero-tag">NO EXCUSES • ${isK?'かいと':'なな'}</div>
-      <h1>Gym Tracker</h1>
-      <div class="hero-sub">${state.workouts.length} workouts • ${Object.keys(pr).length} exercises</div>
+      <h1>${isK?'かいと':'なな'}ジム 🏋️</h1>
+      <div class="hero-sub">${gw.length} workouts • ${Object.keys(pr).length} exercises</div>
     </div>
     ${subnav}
     ${pageHTML}`;
 }
 
 // ============================================================
-//  MONEY SECTION（家計簿・共有）
+//  MONEY SECTION（共有の財布・立て替え精算）
 // ============================================================
+function walletName(u) { return u==='kaito' ? 'かいと' : 'なな'; }
+
+function computeWallet(money) {
+  const deposit = money.filter(m=>m.kind==='deposit').reduce((s,m)=>s+m.amount,0);
+  const expense = money.filter(m=>m.kind==='wallet_expense').reduce((s,m)=>s+m.amount,0);
+  return { balance: deposit - expense, deposit, expense };
+}
+
+// 正の値 = ななが かいとに支払う必要がある額（マイナスはその逆）
+function computeImbalance(money) {
+  let net = 0; // +なら kaito の方が多く払っている（nana が kaito に払う）
+  money.filter(m=>m.kind==='tatekae').forEach(m=>{
+    net += (m.user==='kaito' ? 1 : -1) * (m.amount/2);
+  });
+  money.filter(m=>m.kind==='settle').forEach(m=>{
+    // settle: user が払った人、payee が受け取った人
+    if (m.user==='nana' && m.payee==='kaito') net -= m.amount;
+    if (m.user==='kaito' && m.payee==='nana') net += m.amount;
+  });
+  return net;
+}
+
 function moneyHTML(u, isK, ac) {
-  const monthStr = state.moneyMonth;
-  const monthEntries = state.money.filter(m => (m.date||'').startsWith(monthStr));
-  const income  = monthEntries.filter(m=>m.type==='income').reduce((s,m)=>s+m.amount,0);
-  const expense = monthEntries.filter(m=>m.type==='expense').reduce((s,m)=>s+m.amount,0);
-  const balance = income - expense;
-
-  const [y,mo] = monthStr.split('-').map(Number);
-  const monthLabel = `${y}年 ${MONTH_NAMES[mo-1]}`;
-
+  const wallet = computeWallet(state.money);
+  const imbalance = computeImbalance(state.money);
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const monthMoney = state.money.filter(m => (m.date||'').startsWith(thisMonth));
+  const monthDeposit = monthMoney.filter(m=>m.kind==='deposit').reduce((s,m)=>s+m.amount,0);
+  const monthExpense = monthMoney.filter(m=>m.kind==='wallet_expense').reduce((s,m)=>s+m.amount,0);
   const today = new Date().toISOString().slice(0,10);
+
+  const owerUser  = imbalance > 0 ? 'nana' : 'kaito';
+  const owedUser  = imbalance > 0 ? 'kaito' : 'nana';
+  const owedAmount = Math.abs(Math.round(imbalance));
+
+  const all = [...state.money].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.id-a.id);
+
+  const kindLabel = { deposit:'💵 入金', wallet_expense:'💸 財布支出', tatekae:'🤝 立て替え', settle:'✅ 精算' };
+  const kindColor = { deposit:'money-stat-income', wallet_expense:'money-stat-expense', tatekae:'', settle:'' };
 
   return `
     <div class="hero ${u}">
-      <div class="hero-tag">SHARED BUDGET</div>
-      <h1>💰 Money</h1>
-      <div class="hero-sub">ふたりの家計簿（共有データ）</div>
+      <div class="hero-tag">SHARED WALLET</div>
+      <h1>💰 共有の財布</h1>
+      <div class="hero-sub">ふたりのお財布＋立て替え精算（共有データ）</div>
     </div>
-    <div class="cal-nav" style="margin-bottom:18px;">
-      <button class="cal-nav-btn" id="money-prev">◀</button>
-      <span class="cal-month-label">${monthLabel}</span>
-      <button class="cal-nav-btn" id="money-next">▶</button>
+
+    <div class="wallet-balance-card">
+      <div class="wallet-balance-label">財布の残高</div>
+      <div class="wallet-balance-val">¥${yen(wallet.balance)}</div>
     </div>
+
     <div class="cards-grid">
-      <div class="stat-card"><div class="stat-label">収入</div><div class="stat-val money-stat-income">¥${yen(income)}</div></div>
-      <div class="stat-card"><div class="stat-label">支出</div><div class="stat-val money-stat-expense">¥${yen(expense)}</div></div>
-      <div class="stat-card"><div class="stat-label">収支</div><div class="stat-val money-stat-balance">¥${yen(balance)}</div></div>
+      <div class="stat-card"><div class="stat-label">今月の入金</div><div class="stat-val money-stat-income">¥${yen(monthDeposit)}</div></div>
+      <div class="stat-card"><div class="stat-label">今月の財布支出</div><div class="stat-val money-stat-expense">¥${yen(monthExpense)}</div></div>
     </div>
+
+    <div class="settle-card ${owedAmount===0?'settle-zero':''}">
+      ${owedAmount===0
+        ? `<div class="settle-zero-text">🎉 立て替えの貸し借りはぴったりです！</div>`
+        : `<div class="settle-text"><span class="money-who ${owerUser}">${walletName(owerUser)}</span> が <span class="money-who ${owedUser}">${walletName(owedUser)}</span> に <strong>¥${yen(owedAmount)}</strong> 払う番です</div>
+           <button class="submit-btn ${ac}" id="btn-settle" data-ower="${owerUser}" data-owed="${owedUser}" data-amount="${owedAmount}">精算する（払った）</button>`}
+    </div>
+
     <div class="section">
-      <div class="section-title acc-green" style="color:#4ade80;">➕ ADD ENTRY</div>
+      <div class="section-title" style="color:#4ade80;">➕ 記録を追加</div>
       <form class="add-form" id="form-money">
-        <div class="type-toggle">
-          <label class="income-label"><input type="radio" name="type" value="income"><span>💵 収入</span></label>
-          <label class="expense-label"><input type="radio" name="type" value="expense" checked><span>💸 支出</span></label>
+        <div class="type-toggle kind-toggle">
+          <label class="kind-deposit-label"><input type="radio" name="kind" value="deposit" checked><span>💵 財布に入金</span></label>
+          <label class="kind-expense-label"><input type="radio" name="kind" value="wallet_expense"><span>💸 財布から支出</span></label>
+          <label class="kind-tatekae-label"><input type="radio" name="kind" value="tatekae"><span>🤝 立て替え</span></label>
         </div>
-        <select name="category" required style="padding:12px;border:1px solid #2c2c2c;border-radius:12px;background:#0f0f0f;color:white;font-size:14px;">
-          ${MONEY_CATS_EXPENSE.map(c=>`<option value="${c}">${c}</option>`).join('')}
+        <select name="category" class="money-cat-select" style="padding:12px;border:1px solid #322640;border-radius:14px;background:#15101c;color:white;font-size:14px;">
+          ${WALLET_CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}
         </select>
         ${numInput('amount','金額 ¥','',100,isK)}
         <input name="memo" placeholder="メモ（任意）" class="${!isK?'pf':''}">
         <input name="date" type="date" value="${today}" required class="${!isK?'pf':''}">
         <button type="submit" class="submit-btn ${ac}">+ 追加</button>
       </form>
+      <p class="money-hint">「財布に入金」「財布から支出」は共有財布の残高に反映されます。「立て替え」は個人のお金で支払った分を記録し、2人で割り勘（折半）して精算額を計算します。</p>
     </div>
+
     <div class="section">
-      <div class="section-title acc-green" style="color:#4ade80;">📋 履歴</div>
-      ${monthEntries.length===0?'<p class="empty">この月の記録はありません</p>':`
+      <div class="section-title" style="color:#4ade80;">📋 履歴</div>
+      ${all.length===0?'<p class="empty">まだ記録がありません</p>':`
       <table class="money-table">
         <thead><tr><th>日付</th><th>区分</th><th>メモ</th><th>金額</th><th></th></tr></thead>
         <tbody>
-          ${monthEntries.map(m=>`
+          ${all.map(m=>`
             <tr>
-              <td style="color:#6b7280;">${m.date||''}<br><span class="money-who ${m.user}">${m.user==='kaito'?'かいと':'なな'}</span></td>
-              <td><span class="money-cat-pill">${escapeHtml(m.category)}</span></td>
+              <td style="color:#8b8398;">${m.date||''}<br><span class="money-who ${m.user}">${walletName(m.user)}</span>${m.kind==='settle'?` → <span class="money-who ${m.payee}">${walletName(m.payee)}</span>`:''}</td>
+              <td><span class="money-cat-pill">${kindLabel[m.kind]||m.kind}</span>${m.category?` <span class="money-cat-pill">${escapeHtml(m.category)}</span>`:''}</td>
               <td style="color:#9ca3af;">${escapeHtml(m.memo)}</td>
-              <td class="money-amount ${m.type==='income'?'money-stat-income':'money-stat-expense'}">${m.type==='income'?'+':'-'}¥${yen(m.amount)}</td>
+              <td class="money-amount ${kindColor[m.kind]}">¥${yen(m.amount)}</td>
               <td><button class="del-icon-btn" data-del-money="${m.id}">✕</button></td>
             </tr>`).join('')}
         </tbody>
@@ -543,10 +608,11 @@ function appHTML() {
   const ac  = isK ? 'orange' : 'purple';
 
   const navItems = [
-    ['home',  '🏠 ホーム'],
-    ['gym',   '🏋️ Gym Tracker'],
-    ['money', '💰 Money'],
-    ['shops', '📍 Shops'],
+    ['home',  null,    '🏠 ホーム'],
+    ['gym',   'kaito', '🏋️ かいとジム'],
+    ['gym',   'nana',  '💪 ななジム'],
+    ['money', null,    '💰 財布'],
+    ['shops', null,    '📍 Shop'],
   ];
 
   const sidebar = `
@@ -557,13 +623,17 @@ function appHTML() {
         <div class="av">${isK?'🏋️':'💪'}</div>
         <div><div class="uname">${isK?'かいと':'なな'}</div><div style="font-size:10px;color:#4b5563;">Member</div></div>
       </div>
-      ${navItems.map(([p,l]) => `<button class="nav-btn ${state.section===p?'active-'+ac:''}" data-section="${p}">${l}</button>`).join('')}
+      ${navItems.map(([p,gu,l]) => {
+        const active = state.section===p && (p!=='gym' || state.gymUser===gu);
+        const activeColor = p==='gym' ? (gu==='kaito'?'orange':'purple') : (p==='money'?'green':p==='shops'?'blue':ac);
+        return `<button class="nav-btn ${active?'active-'+activeColor:''}" data-section="${p}" ${gu?`data-gymuser="${gu}"`:''}>${l}</button>`;
+      }).join('')}
       <button class="logout-btn" id="btn-logout">← ユーザー切替</button>
     </div>`;
 
   let body = '';
-  if (state.section==='home') body = homeHTML(isK, ac);
-  else if (state.section==='gym') body = gymHTML(u, isK, ac);
+  if (state.section==='home') body = homeHTML();
+  else if (state.section==='gym') body = gymHTML(state.gymUser || u);
   else if (state.section==='money') body = moneyHTML(u, isK, ac);
   else body = shopsHTML(u, isK, ac);
 
@@ -621,10 +691,11 @@ function bindEvents() {
 
   // セクション切替（サイドバー & ホームのカード）
   document.querySelectorAll('[data-section]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ state.section=btn.dataset.section; render(); });
-  });
-  document.querySelectorAll('[data-goto]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ state.section=btn.dataset.goto; render(); });
+    btn.addEventListener('click', ()=>{
+      state.section=btn.dataset.section;
+      if (btn.dataset.gymuser) { state.gymUser=btn.dataset.gymuser; state.gymPage='log'; }
+      render();
+    });
   });
 
   // Gymサブナビ
@@ -653,48 +724,39 @@ function bindEvents() {
     });
   });
 
-  // Money 月ナビ
-  document.getElementById('money-prev')?.addEventListener('click', ()=>{
-    const [y,m] = state.moneyMonth.split('-').map(Number);
-    const d = new Date(y, m-2, 1);
-    state.moneyMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    render();
-  });
-  document.getElementById('money-next')?.addEventListener('click', ()=>{
-    const [y,m] = state.moneyMonth.split('-').map(Number);
-    const d = new Date(y, m, 1);
-    state.moneyMonth = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    render();
-  });
-
   // グラフ種目選択
   document.querySelectorAll('[data-ex]').forEach(btn=>{
     btn.addEventListener('click', ()=>{ state.selectedEx=btn.dataset.ex; render(); });
   });
 
-  // +/- ボタン
+  // +/- ボタン（通常フォーム & クイック記録の重さ入力）
   document.querySelectorAll('.num-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const input = btn.closest('.num-input-wrap').querySelector('input');
-      const step  = parseFloat(input.step)||1;
-      const val   = parseFloat(input.value)||0;
+      let input;
+      if (btn.dataset.qwTarget) input = document.getElementById(btn.dataset.qwTarget);
+      else input = btn.closest('.num-input-wrap').querySelector('input');
+      if (!input) return;
+      const step = parseFloat(input.step)||1;
+      const val  = parseFloat(input.value)||0;
       if (btn.classList.contains('plus')) input.value = Math.round((val+step)*100)/100;
       else input.value = Math.max(0, Math.round((val-step)*100)/100);
     });
   });
 
-  // ワンタップ記録
+  // ワンタップ記録（重さは入力欄から取得＝編集可能）
   document.querySelectorAll('.quick-add-btn').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const today = new Date().toISOString().slice(0,10);
+      const weightInput = btn.dataset.weightInput ? document.getElementById(btn.dataset.weightInput) : null;
+      const weight = weightInput ? (parseFloat(weightInput.value)||0) : (parseFloat(btn.dataset.weight)||0);
       const data = {
-        exercise: btn.dataset.exercise, weight: parseFloat(btn.dataset.weight)||0,
+        exercise: btn.dataset.exercise, weight,
         reps: parseInt(btn.dataset.reps)||0, sets: parseInt(btn.dataset.sets)||0, date: today,
       };
       btn.textContent='✓ 追加!'; btn.disabled=true;
       state.workouts.unshift({id:'temp-'+Date.now(), user:state.user, ...data});
       await saveWorkout(state.user, data);
-      state.workouts = await loadWorkouts(state.user);
+      state.workouts = await loadWorkouts();
       state.gymPage='log'; render();
     });
   });
@@ -708,7 +770,7 @@ function bindEvents() {
     f.reset(); f.date.value=new Date().toISOString().slice(0,10);
     render();
     await saveWorkout(state.user, data);
-    state.workouts=await loadWorkouts(state.user); render();
+    state.workouts=await loadWorkouts(); render();
   });
 
   // Add Menu
@@ -720,7 +782,7 @@ function bindEvents() {
     state.menus.push({id:'temp-'+Date.now(), user:state.user, ...data});
     f.reset(); render();
     await saveMenu(state.user, data);
-    state.menus=await loadMenus(state.user); render();
+    state.menus=await loadMenus(); render();
   });
 
   // Delete Workout / Menu
@@ -729,7 +791,7 @@ function bindEvents() {
       const id=btn.dataset.delWorkout;
       state.workouts=state.workouts.filter(w=>w.id!==id); render();
       await removeWorkout(id);
-      state.workouts=await loadWorkouts(state.user); render();
+      state.workouts=await loadWorkouts(); render();
     });
   });
   document.querySelectorAll('[data-del-menu]').forEach(btn=>{
@@ -737,32 +799,44 @@ function bindEvents() {
       const id=btn.dataset.delMenu;
       state.menus=state.menus.filter(m=>m.id!==id); render();
       await removeMenu(id);
-      state.menus=await loadMenus(state.user); render();
+      state.menus=await loadMenus(); render();
     });
   });
 
-  // Money: カテゴリ選択を収入/支出で切替
-  const typeRadios = document.querySelectorAll('#form-money input[name="type"]');
-  const catSelect = document.querySelector('#form-money select[name="category"]');
-  typeRadios.forEach(r=>{
-    r.addEventListener('change', ()=>{
-      if (!catSelect) return;
-      const cats = r.value==='income' ? MONEY_CATS_INCOME : MONEY_CATS_EXPENSE;
-      if (r.checked) catSelect.innerHTML = cats.map(c=>`<option value="${c}">${c}</option>`).join('');
-    });
-  });
+  // Money: 種別(入金/財布支出/立て替え)でカテゴリ欄の表示を切替
+  const kindRadios = document.querySelectorAll('#form-money input[name="kind"]');
+  const catSelect2  = document.querySelector('#form-money .money-cat-select');
+  function syncMoneyCategoryVisibility() {
+    if (!catSelect2) return;
+    const checked = document.querySelector('#form-money input[name="kind"]:checked');
+    catSelect2.style.display = (checked && checked.value==='deposit') ? 'none' : '';
+  }
+  kindRadios.forEach(r => r.addEventListener('change', syncMoneyCategoryVisibility));
+  syncMoneyCategoryVisibility();
 
-  // Add Money
+  // Add Money（入金 / 財布支出 / 立て替え）
   document.getElementById('form-money')?.addEventListener('submit', async e=>{
     e.preventDefault();
     const f=e.target;
     const data={
-      type: f.type.value, category: f.category.value,
+      kind: f.kind.value,
+      category: f.kind.value==='deposit' ? '' : f.category.value,
       amount: parseFloat(f.amount.value)||0, memo: f.memo.value.trim(), date: f.date.value,
     };
-    state.money.unshift({id:'temp-'+Date.now(), user:state.user, ...data});
+    state.money.unshift({id:'temp-'+Date.now(), user:state.user, payee:'', ...data});
     f.reset(); render();
     await saveMoney(state.user, data);
+    state.money=await loadMoney(); render();
+  });
+
+  // 精算する（立て替えの貸し借りをまとめて解消）
+  document.getElementById('btn-settle')?.addEventListener('click', async ()=>{
+    const btn = document.getElementById('btn-settle');
+    const data = { kind:'settle', category:'', amount: parseFloat(btn.dataset.amount)||0, memo:'精算', date:new Date().toISOString().slice(0,10), payee: btn.dataset.owed };
+    const payer = btn.dataset.ower;
+    btn.textContent='✓ 精算しました'; btn.disabled=true;
+    state.money.unshift({id:'temp-'+Date.now(), user:payer, ...data});
+    await saveMoney(payer, data);
     state.money=await loadMoney(); render();
   });
 
@@ -811,7 +885,7 @@ function bindEvents() {
 async function login(user) {
   state.user=user; state.section='home';
   root.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#6b7280;font-size:14px;letter-spacing:2px;">読み込み中...</div>`;
-  await loadAll(user);
+  await loadAll();
   render();
 }
 
